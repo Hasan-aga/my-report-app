@@ -13,21 +13,17 @@ const dummyData = [
 ];
 
 const DataSelectionPage = () => {
-  const [selectedData, setSelectedData] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [selectedData, setSelectedData] = useState([]);
 
-  const handlePreview = async () => {
-    try {
-      const pdfBytes = await PDFService.fillTemplate(
-        PDF_TEMPLATE_PATH,
-        selectedData,
-        PDF_COORDINATES
-      );
-      const previewUrl = await PDFService.previewPDF(pdfBytes);
-      setPreviewUrl(previewUrl);
-    } catch (error) {
-      console.error('Error generating PDF preview:', error);
-    }
+  const handleDataSelect = (item) => {
+    setSelectedData(prevSelected => {
+      const isSelected = prevSelected.includes(item);
+      if (isSelected) {
+        return prevSelected.filter(selected => selected !== item);
+      } else {
+        return [...prevSelected, item];
+      }
+    });
   };
 
   const handlePrint = async () => {
@@ -43,27 +39,23 @@ const DataSelectionPage = () => {
     }
   };
 
-  const handleCheckboxChange = (id) => {
-    setSelectedData(prev => {
-      if (prev && prev.id === id) {
-        return null;
-      } else {
-        return dummyData.find(item => item.id === id);
-      }
-    });
-  };
-
   return (
     <div className="data-selection-container">
       <h1>Select Data for Report</h1>
       
       <div className="data-list">
         {dummyData.map((item) => (
-          <div key={item.id} className="data-item">
+          <div
+            key={item.id}
+            className={`data-item ${selectedData.includes(item) ? 'selected' : ''}`}
+            onClick={() => handleDataSelect(item)}
+          >
             <input
               type="checkbox"
-              checked={selectedData && selectedData.id === item.id}
-              onChange={() => handleCheckboxChange(item.id)}
+              checked={selectedData.includes(item)}
+              onChange={() => handleDataSelect(item)}
+              onClick={(e) => handleDataSelect(item)}
+              className="data-checkbox"
             />
             <div className="item-details">
               <span className="name">{item.name}</span>
@@ -74,33 +66,15 @@ const DataSelectionPage = () => {
         ))}
       </div>
 
-      <div className="preview-controls">
-        <button 
-          className="preview-button" 
-          onClick={handlePreview}
-          disabled={!selectedData}
-        >
-          Preview PDF
-        </button>
+      <div className="print-controls">
         <button 
           className="print-button" 
           onClick={handlePrint}
-          disabled={!selectedData}
+          disabled={selectedData.length === 0}
         >
           Print PDF
         </button>
       </div>
-
-      {previewUrl && (
-        <div className="pdf-preview">
-          <iframe
-            src={previewUrl}
-            width="100%"
-            height="600px"
-            title="PDF Preview"
-          />
-        </div>
-      )}
     </div>
   );
 };

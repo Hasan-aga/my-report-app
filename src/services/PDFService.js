@@ -40,7 +40,13 @@ class PDFService {
   async printPDF(pdfBytes) {
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
-    const printWindow = window.open(url);
+    
+    // Open in a popup window with specific dimensions
+    const printWindow = window.open(
+      url,
+      'Print',
+      'width=800,height=600,toolbar=0,scrollbars=1,status=0'
+    );
     
     printWindow.onload = () => {
       printWindow.print();
