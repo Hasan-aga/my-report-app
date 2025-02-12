@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { SPACE } from '../constants/config';
 
 class PDFService {
   async loadTemplate(templatePath) {
@@ -21,12 +22,23 @@ class PDFService {
       size: 12,
     });
 
-    // Insert data at specified coordinates
-    page.drawText(data.toString(), {
-      x: coordinates.data.x,
-      y: coordinates.data.y,
-      font,
-      size: 12,
+    // Insert data items with bullet points
+    data.forEach((item, index) => {
+      // Draw bullet point
+      page.drawText('•', {
+        x: coordinates.data.x - 15,
+        y: coordinates.data.y - (index * SPACE),
+        font,
+        size: 12,
+      });
+
+      // Draw item name
+      page.drawText(item.name, {
+        x: coordinates.data.x,
+        y: coordinates.data.y - (index * SPACE),
+        font,
+        size: 12,
+      });
     });
 
     return await pdfDoc.save();

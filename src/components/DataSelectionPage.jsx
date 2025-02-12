@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
 import PDFService from '../services/PDFService';
-import { PDF_TEMPLATE_PATH, PDF_COORDINATES } from '../constants/config';
+import { PDF_TEMPLATE_PATH, PDF_COORDINATES, REPORT_DATA } from '../constants/config';
 import './DataSelectionPage.css';
 
-// Dummy data for demonstration
-const dummyData = [
-  { id: 1, name: "John Doe", age: 30, department: "IT" },
-  { id: 2, name: "Jane Smith", age: 28, department: "HR" },
-  { id: 3, name: "Mike Johnson", age: 35, department: "Finance" },
-  { id: 4, name: "Sarah Williams", age: 32, department: "Marketing" },
-  { id: 5, name: "Tom Brown", age: 27, department: "IT" },
-];
 
 const DataSelectionPage = () => {
   const [selectedData, setSelectedData] = useState([]);
@@ -44,7 +36,7 @@ const DataSelectionPage = () => {
       <h1>Select Data for Report</h1>
       
       <div className="data-list">
-        {dummyData.map((item) => (
+        {REPORT_DATA.map((item) => (
           <div
             key={item.id}
             className={`data-item ${selectedData.includes(item) ? 'selected' : ''}`}
