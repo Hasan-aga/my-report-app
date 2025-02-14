@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { SPACE } from '../constants/config';
+import { PDF_COORDINATES, SPACE } from '../constants/config';
 
 class PDFService {
   async loadTemplate(templatePath) {
@@ -16,8 +16,8 @@ class PDFService {
     // Insert current date
     const currentDate = new Date().toLocaleDateString();
     page.drawText(currentDate, {
-      x: coordinates.date.x,
-      y: coordinates.date.y,
+      x: PDF_COORDINATES.date.x,
+      y: PDF_COORDINATES.date.y,
       font,
       size: 12,
     });
@@ -26,16 +26,16 @@ class PDFService {
     data.forEach((item, index) => {
       // Draw bullet point
       page.drawText('•', {
-        x: coordinates.data.x - 15,
-        y: coordinates.data.y - (index * SPACE),
+        x: PDF_COORDINATES.data.x - 15,
+        y: PDF_COORDINATES.data.y - (index * SPACE),
         font,
         size: 12,
       });
 
       // Draw item name
       page.drawText(item.name, {
-        x: coordinates.data.x,
-        y: coordinates.data.y - (index * SPACE),
+        x: PDF_COORDINATES.data.x,
+        y: PDF_COORDINATES.data.y - (index * SPACE),
         font,
         size: 12,
       });
