@@ -157,6 +157,26 @@ class PDFService {
             color: rgb(0, 0, 0)
           });
         });
+
+        // Draw notes if they exist
+        if (data[0]?.notes) {
+          const notesYPosition = PDF_COORDINATES.data.y - lineHeight * (findings.length + 2);
+          page.drawText('Notes:', {
+            x: PDF_COORDINATES.data.x,
+            y: notesYPosition,
+            size: fontSize,
+            font: font,
+            color: rgb(0, 0, 0)
+          });
+
+          page.drawText(data[0].notes, {
+            x: PDF_COORDINATES.data.x,
+            y: notesYPosition - lineHeight,
+            size: fontSize,
+            font: font,
+            color: rgb(0, 0, 0)
+          });
+        }
       }
 
       // Add date

@@ -12,6 +12,7 @@ import {
   Snackbar,
   Box,
   TextField,
+  Divider,
 } from '@mui/material';
 import { Print } from '@mui/icons-material';
 import { REPORT_DATA } from '../constants/config';
@@ -20,6 +21,7 @@ import PDFService from '../services/PDFService';
 const DataSelectionPage = ({ category, templatePath }) => {
   const [selectedFindings, setSelectedFindings] = useState([]);
   const [editedFindings, setEditedFindings] = useState({});
+  const [notes, setNotes] = useState('');
   const [error, setError] = useState(null);
 
   const categoryData = REPORT_DATA[category];
@@ -59,7 +61,8 @@ const DataSelectionPage = ({ category, templatePath }) => {
 
       const selectedData = [{
         category: categoryData.name,
-        findings: finalFindings
+        findings: finalFindings,
+        notes: notes.trim()
       }];
 
       if (!templatePath) {
@@ -78,7 +81,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
       await PDFService.printPDF(pdfBytes);
     } catch (error) {
       console.error('Print error:', error);
-      setError(`${error.message}\nPlease check that the template is valid and try again.`);
+      setError(error.message);
     }
   };
 
@@ -93,7 +96,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
   }
 
   return (
-    <Paper elevation={2} sx={{ p: 3, height: '80vh' }}>
+    <Paper elevation={2} sx={{ p: 3, height: '80vh', display: 'flex', flexDirection: 'column' }}>
       <Snackbar 
         open={!!error} 
         autoHideDuration={6000} 
@@ -114,7 +117,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
         </Typography>
       </Box>
 
-      <List sx={{ width: '100%' }}>
+      <List sx={{ width: '100%', flexGrow: 1, overflow: 'auto' }}>
         {categoryData.findings.map((finding) => (
           <ListItem
             key={finding}
@@ -149,7 +152,22 @@ const DataSelectionPage = ({ category, templatePath }) => {
         ))}
       </List>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+      <Divider sx={{ my: 2 }} />
+
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          fullWidth
+          multiline
+          rows={3}
+          variant="outlined"
+          label="Additional Notes (Optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Add any additional notes here..."
+        />
+      </Box>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           variant="contained"
           color="primary"
