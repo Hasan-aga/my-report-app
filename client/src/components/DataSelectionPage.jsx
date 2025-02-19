@@ -138,10 +138,19 @@ const DataSelectionPage = ({ category, templatePath }) => {
                   onBlur={(e) => handleFindingEdit(finding, e.target.value)}
                   InputProps={{
                     disableUnderline: !selectedFindings.includes(finding),
+                    style: {
+                      color: '#283618',  // Dark green for all text
+                      opacity: 1,        // Full opacity always
+                    }
                   }}
                   sx={{
                     '& .MuiInputBase-input': {
                       cursor: selectedFindings.includes(finding) ? 'text' : 'default',
+                      '&.Mui-disabled': {
+                        color: '#283618',  // Keep same color when disabled
+                        WebkitTextFillColor: '#283618',  // Override WebKit default
+                        opacity: 1,        // Keep full opacity when disabled
+                      }
                     }
                   }}
                   disabled={!selectedFindings.includes(finding)}
