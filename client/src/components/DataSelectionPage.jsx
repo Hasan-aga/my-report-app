@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Divider,
   List,
   ListItem,
   ListItemText,
@@ -105,7 +104,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
         elevation={2}
         sx={{
           p: 3,
-          height: "80vh",
+          height: "90vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center"
@@ -121,7 +120,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
   return (
     <Paper
       elevation={2}
-      sx={{ p: 3, height: "80vh", display: "flex", flexDirection: "column" }}
+      sx={{ p: 3, height: "90vh", display: "flex", flexDirection: "column" }}
     >
       <Snackbar
         open={!!error}
@@ -143,57 +142,63 @@ const DataSelectionPage = ({ category, templatePath }) => {
         </Typography>
       </Box>
 
-      <List sx={{ width: "100%", flexGrow: 1, overflow: "auto" }}>
-        {allFindings.map((finding) => (
-          <ListItem key={finding} divider disablePadding>
-            <Checkbox
-              checked={selectedFindings.includes(finding)}
-              onChange={() => handleCheckboxChange(finding)}
-              sx={{ ml: 1 }}
-            />
-            <ListItemText
-              primary={
-                <TextField
-                  fullWidth
-                  variant="standard"
-                  defaultValue={finding}
-                  onBlur={(e) => handleFindingEdit(finding, e.target.value)}
-                  autoFocus={
-                    finding === allFindings[allFindings.length - 1] &&
-                    customFindings.includes(finding)
-                  }
-                  InputProps={{
-                    disableUnderline: !selectedFindings.includes(finding),
-                    style: {
-                      color: "#283618", // Dark green for all text
-                      opacity: 1 // Full opacity always
+      <Box
+        sx={{ display: "flex", flexDirection: "column", gap: 2, flexGrow: 1 }}
+      >
+        <List sx={{ width: "100%", overflow: "auto" }}>
+          {allFindings.map((finding) => (
+            <ListItem key={finding} divider disablePadding>
+              <Checkbox
+                checked={selectedFindings.includes(finding)}
+                onChange={() => handleCheckboxChange(finding)}
+                sx={{ ml: 1 }}
+              />
+              <ListItemText
+                primary={
+                  <TextField
+                    fullWidth
+                    variant="standard"
+                    defaultValue={finding}
+                    onBlur={(e) => handleFindingEdit(finding, e.target.value)}
+                    autoFocus={
+                      finding === allFindings[allFindings.length - 1] &&
+                      customFindings.includes(finding)
                     }
-                  }}
-                  sx={{
-                    "& .MuiInputBase-input": {
-                      cursor: selectedFindings.includes(finding)
-                        ? "text"
-                        : "default",
-                      "&.Mui-disabled": {
-                        color: theme.palette.text.primary, // Keep same color when disabled
-                        WebkitTextFillColor: theme.palette.text.primary, // Override WebKit default
-                        opacity: 1 // Keep full opacity when disabled
+                    InputProps={{
+                      disableUnderline: !selectedFindings.includes(finding),
+                      style: {
+                        color: "#283618", // Dark green for all text
+                        opacity: 1 // Full opacity always
                       }
-                    }
-                  }}
-                  disabled={!selectedFindings.includes(finding)}
-                />
-              }
-            />
-          </ListItem>
-        ))}
-      </List>
+                    }}
+                    sx={{
+                      "& .MuiInputBase-input": {
+                        cursor: selectedFindings.includes(finding)
+                          ? "text"
+                          : "default",
+                        "&.Mui-disabled": {
+                          color: theme.palette.text.primary, // Keep same color when disabled
+                          WebkitTextFillColor: theme.palette.text.primary, // Override WebKit default
+                          opacity: 1 // Keep full opacity when disabled
+                        }
+                      }
+                    }}
+                    disabled={!selectedFindings.includes(finding)}
+                  />
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
 
-      <Button onClick={handleAddNewFinding} startIcon={<Add />} sx={{ my: 2 }}>
-        Add Finding
-      </Button>
-
-      <Divider sx={{ my: 2 }} />
+        <Button
+          onClick={handleAddNewFinding}
+          startIcon={<Add />}
+          variant="outlined"
+        >
+          Add Finding
+        </Button>
+      </Box>
 
       <Box sx={{ mb: 2 }}>
         <TextField
