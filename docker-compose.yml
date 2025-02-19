@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   client:
@@ -11,6 +11,7 @@ services:
       - VITE_API_URL=http://server:5002
     depends_on:
       - server
+    restart: always
 
   server:
     build:
@@ -23,6 +24,7 @@ services:
     environment:
       - PORT=5002
       - NODE_ENV=production
+    restart: always
 
 volumes:
-  templates: 
+  templates:
