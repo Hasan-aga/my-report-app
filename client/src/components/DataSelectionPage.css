@@ -10,11 +10,13 @@
 
 .data-item {
   display: flex;
-  align-items: center;
-  padding: 15px;
-  border: 1px solid #ddd;
-  margin-bottom: 10px;
-  border-radius: 4px;
+  align-items: flex-start;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.data-item:last-child {
+  border-bottom: none;
 }
 
 .data-item:hover {
@@ -24,9 +26,8 @@
 }
 
 .item-details {
-  margin-left: 15px;
-  display: flex;
-  gap: 20px;
+  flex: 1;
+  margin-left: 12px;
 }
 
 .name {
@@ -101,4 +102,29 @@
 .finding {
   font-size: 1rem;
   color: #333;
+}
+
+.finding-text {
+  padding: 4px 8px;
+  min-height: 24px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: text;
+}
+
+.finding-text:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.finding-text:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.data-checkbox {
+  margin-top: 8px;
 } 

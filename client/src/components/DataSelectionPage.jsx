@@ -3,12 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import PDFService from '../services/PDFService';
 import ErrorNotification from './ErrorNotification';
 import './DataSelectionPage.css';
-import { PDF_TEMPLATE_PATH, REPORT_DATA } from '../constants/config';
+import { REPORT_DATA } from '../constants/config';
 
 const DataSelectionPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedFindings, setSelectedFindings] = useState([]);
+  const [editedFindings, setEditedFindings] = useState({});
   const templatePath = location.state?.templatePath;
   const category = location.state?.category;
   const [error, setError] = useState(null);
@@ -30,11 +31,27 @@ const DataSelectionPage = () => {
     });
   };
 
+  const handleFindingEdit = (originalFinding, newText) => {
+    setEditedFindings(prev => ({
+      ...prev,
+      [originalFinding]: newText
+    }));
+  };
+
+  const getFindingText = (finding) => {
+    return editedFindings[finding] || finding;
+  };
+
   const handlePrint = async () => {
     try {
+      // Use edited findings if they exist, otherwise use original
+      const finalFindings = selectedFindings.map(finding => 
+        getFindingText(finding)
+      );
+
       const selectedData = [{
         category: categoryData.name,
-        findings: selectedFindings
+        findings: finalFindings
       }];
       
       console.log('Print request:', {
@@ -85,7 +102,13 @@ const DataSelectionPage = () => {
               className="data-checkbox"
             />
             <div className="item-details">
-              <span className="finding">{finding}</span>
+              <div
+                className="finding-text"
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => handleFindingEdit(finding, e.target.innerText)}
+                dangerouslySetInnerHTML={{ __html: getFindingText(finding) }}
+              />
             </div>
           </div>
         ))}
