@@ -11,6 +11,14 @@ export const PDF_COORDINATES = {
   }
 };
 
+// Font sizes
+export const FONT_SIZES = {
+  title: 14,      // For category title
+  content: 12,    // For findings
+  notes: 11,      // For notes
+  date: 12        // For date
+};
+
 // Space between lines
 export const SPACE = 25;  // Adjust this value for line spacing
 

@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-import { PDF_COORDINATES, SPACE } from '../constants/config';
+import { PDF_COORDINATES, SPACE, FONT_SIZES } from '../constants/config';
 
 // Helper function for date formatting
 const formatDate = (date) => {
@@ -131,28 +131,28 @@ class PDFService {
       const fontSize = 12;
       const lineHeight = SPACE || fontSize * 1.2;
 
-      // Draw category
+      // Draw category with title font size
       if (data[0]?.category) {
         page.drawText(data[0].category, {
           x: PDF_COORDINATES.data.x,
           y: PDF_COORDINATES.data.y,
-          size: fontSize + 2,
+          size: FONT_SIZES.title,
           font: font,
           color: rgb(0, 0, 0)
         });
       }
 
-      // Draw findings
+      // Draw findings with content font size
       if (data[0]?.findings) {
         const findings = data[0].findings;
         findings.forEach((finding, index) => {
-          const yPosition = PDF_COORDINATES.data.y - lineHeight * (index + 1);
+          const yPosition = PDF_COORDINATES.data.y - SPACE * (index + 1);
           
           // Draw bullet point
           page.drawText('•', {
             x: PDF_COORDINATES.data.x - 15,
             y: yPosition,
-            size: fontSize,
+            size: FONT_SIZES.content,
             font: font,
             color: rgb(0, 0, 0)
           });
@@ -161,39 +161,39 @@ class PDFService {
           page.drawText(finding, {
             x: PDF_COORDINATES.data.x,
             y: yPosition,
-            size: fontSize,
+            size: FONT_SIZES.content,
             font: font,
             color: rgb(0, 0, 0)
           });
         });
 
-        // Draw notes if they exist
+        // Draw notes with notes font size
         if (data[0]?.notes) {
-          const notesYPosition = PDF_COORDINATES.data.y - lineHeight * (findings.length + 2);
+          const notesYPosition = PDF_COORDINATES.data.y - SPACE * (findings.length + 2);
           page.drawText('Notes:', {
             x: PDF_COORDINATES.data.x,
             y: notesYPosition,
-            size: fontSize,
+            size: FONT_SIZES.content,
             font: font,
             color: rgb(0, 0, 0)
           });
 
           page.drawText(data[0].notes, {
             x: PDF_COORDINATES.data.x,
-            y: notesYPosition - lineHeight,
-            size: fontSize,
+            y: notesYPosition - SPACE,
+            size: FONT_SIZES.notes,
             font: font,
             color: rgb(0, 0, 0)
           });
         }
       }
 
-      // Add date with new format
+      // Draw date with date font size
       const currentDate = formatDate(new Date());
       page.drawText(currentDate, {
         x: PDF_COORDINATES.date.x,
         y: PDF_COORDINATES.date.y,
-        size: fontSize,
+        size: FONT_SIZES.date,
         font: font,
         color: rgb(0, 0, 0)
       });
