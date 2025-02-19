@@ -145,84 +145,102 @@ const DataSelectionPage = ({ category, templatePath }) => {
       <Box
         sx={{ display: "flex", flexDirection: "column", gap: 2, flexGrow: 1 }}
       >
-        <List sx={{ width: "100%", overflow: "auto" }}>
-          {allFindings.map((finding) => (
-            <ListItem key={finding} disablePadding>
-              <Checkbox
-                checked={selectedFindings.includes(finding)}
-                onChange={() => handleCheckboxChange(finding)}
-                sx={{ ml: 1 }}
-              />
-              <ListItemText
-                primary={
-                  <TextField
-                    fullWidth
-                    variant="standard"
-                    defaultValue={finding}
-                    onBlur={(e) => handleFindingEdit(finding, e.target.value)}
-                    autoFocus={
-                      finding === allFindings[allFindings.length - 1] &&
-                      customFindings.includes(finding)
-                    }
-                    InputProps={{
-                      disableUnderline: !selectedFindings.includes(finding),
-                      style: {
-                        color: "#283618", // Dark green for all text
-                        opacity: 1 // Full opacity always
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            flexGrow: 1,
+            border: 1,
+            borderColor: "divider",
+            borderRadius: 1,
+            overflow: "hidden"
+          }}
+        >
+          <List sx={{ width: "100%", overflow: "auto" }}>
+            {allFindings.map((finding) => (
+              <ListItem key={finding} disablePadding>
+                <Checkbox
+                  checked={selectedFindings.includes(finding)}
+                  onChange={() => handleCheckboxChange(finding)}
+                  sx={{ ml: 1 }}
+                />
+                <ListItemText
+                  primary={
+                    <TextField
+                      fullWidth
+                      variant="standard"
+                      defaultValue={finding}
+                      onBlur={(e) => handleFindingEdit(finding, e.target.value)}
+                      autoFocus={
+                        finding === allFindings[allFindings.length - 1] &&
+                        customFindings.includes(finding)
                       }
-                    }}
-                    sx={{
-                      "& .MuiInputBase-input": {
-                        cursor: selectedFindings.includes(finding)
-                          ? "text"
-                          : "default",
-                        "&.Mui-disabled": {
-                          color: theme.palette.text.primary, // Keep same color when disabled
-                          WebkitTextFillColor: theme.palette.text.primary, // Override WebKit default
-                          opacity: 1 // Keep full opacity when disabled
+                      InputProps={{
+                        disableUnderline: !selectedFindings.includes(finding),
+                        style: {
+                          color: "#283618", // Dark green for all text
+                          opacity: 1 // Full opacity always
                         }
-                      }
-                    }}
-                    disabled={!selectedFindings.includes(finding)}
-                  />
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
+                      }}
+                      sx={{
+                        "& .MuiInputBase-input": {
+                          cursor: selectedFindings.includes(finding)
+                            ? "text"
+                            : "default",
+                          "&.Mui-disabled": {
+                            color: theme.palette.text.primary, // Keep same color when disabled
+                            WebkitTextFillColor: theme.palette.text.primary, // Override WebKit default
+                            opacity: 1 // Keep full opacity when disabled
+                          }
+                        }
+                      }}
+                      disabled={!selectedFindings.includes(finding)}
+                    />
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
 
-        <Button
-          onClick={handleAddNewFinding}
-          startIcon={<Add />}
-          variant="outlined"
-        >
-          Add Finding
-        </Button>
-      </Box>
+          <Button
+            onClick={handleAddNewFinding}
+            startIcon={<Add fontSize="small" />}
+            sx={{
+              borderRadius: 0,
+              py: 0.5,
+              fontSize: "0.875rem",
+              minHeight: 40
+            }}
+            size="small"
+          >
+            Add Finding
+          </Button>
+        </Box>
 
-      <Box sx={{ mb: 2 }}>
-        <TextField
-          fullWidth
-          multiline
-          rows={3}
-          variant="outlined"
-          label="Additional Notes (Optional)"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Add any additional notes here..."
-        />
-      </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            variant="outlined"
+            label="Additional Notes (Optional)"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add any additional notes here..."
+          />
+        </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Print />}
-          onClick={handlePrint}
-          size="large"
-        >
-          Print Report
-        </Button>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Print />}
+            onClick={handlePrint}
+            size="large"
+          >
+            Print Report
+          </Button>
+        </Box>
       </Box>
     </Paper>
   )
