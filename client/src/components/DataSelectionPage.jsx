@@ -118,7 +118,6 @@ const DataSelectionPage = () => {
         <button 
           className="print-button" 
           onClick={handlePrint}
-          disabled={selectedFindings.length === 0}
         >
           Print PDF
         </button>
