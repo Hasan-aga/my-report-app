@@ -59,7 +59,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
         getFindingText(finding)
       );
 
-      const selectedData = [{
+      const selectedData = finalFindings.length == 0? [{category:"", findings:[], notes: notes.trim()}]:[{
         category: categoryData.name,
         findings: finalFindings,
         notes: notes.trim()
@@ -174,7 +174,6 @@ const DataSelectionPage = ({ category, templatePath }) => {
           startIcon={<Print />}
           onClick={handlePrint}
           size="large"
-          disabled={selectedFindings.length === 0}
         >
           Print Report
         </Button>

@@ -2,7 +2,7 @@ export const PDF_TEMPLATE_PATH = 'http://localhost:5002/api/templates/file/templ
 
 export const PDF_COORDINATES = {
   date: {
-    x: 450,  // Adjust this value for date position from left
+    x: 445,  // Adjust this value for date position from left
     y: 590   // Adjust this value for date position from bottom
   },
   data: {

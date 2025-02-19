@@ -1,6 +1,15 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { PDF_COORDINATES, SPACE } from '../constants/config';
 
+// Helper function for date formatting
+const formatDate = (date) => {
+  return date.toLocaleDateString('en-CA', { // en-CA gives yyyy/mm/dd format
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).replace(/-/g, '/'); // Replace hyphens with slashes
+};
+
 class PDFService {
   async loadTemplate(templatePath) {
     const response = await fetch(templatePath);
@@ -179,8 +188,8 @@ class PDFService {
         }
       }
 
-      // Add date
-      const currentDate = new Date().toLocaleDateString();
+      // Add date with new format
+      const currentDate = formatDate(new Date());
       page.drawText(currentDate, {
         x: PDF_COORDINATES.date.x,
         y: PDF_COORDINATES.date.y,
