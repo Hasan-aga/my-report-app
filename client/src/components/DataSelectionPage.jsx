@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import PDFService from '../services/PDFService';
-import ErrorNotification from './ErrorNotification';
-import './DataSelectionPage.css';
+import {
+  Container,
+  Typography,
+  Checkbox,
+  Button,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Alert,
+  Snackbar,
+  Box,
+  TextField,
+} from '@mui/material';
+import { Print } from '@mui/icons-material';
 import { REPORT_DATA } from '../constants/config';
+import PDFService from '../services/PDFService';
 
-const DataSelectionPage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const DataSelectionPage = ({ category, templatePath }) => {
   const [selectedFindings, setSelectedFindings] = useState([]);
   const [editedFindings, setEditedFindings] = useState({});
-  const templatePath = location.state?.templatePath;
-  const category = location.state?.category;
   const [error, setError] = useState(null);
 
-  // Get the category data or redirect if invalid
   const categoryData = REPORT_DATA[category];
-  if (!categoryData) {
-    navigate('/');
-    return null;
-  }
 
   const handleCheckboxChange = (finding) => {
     setSelectedFindings(prev => {
@@ -44,7 +47,12 @@ const DataSelectionPage = () => {
 
   const handlePrint = async () => {
     try {
-      // Use edited findings if they exist, otherwise use original
+      console.log('Print request:', {
+        templatePath,
+        category,
+        selectedFindings
+      });
+
       const finalFindings = selectedFindings.map(finding => 
         getFindingText(finding)
       );
@@ -53,11 +61,6 @@ const DataSelectionPage = () => {
         category: categoryData.name,
         findings: finalFindings
       }];
-      
-      console.log('Print request:', {
-        data: selectedData,
-        templatePath: templatePath
-      });
 
       if (!templatePath) {
         throw new Error('No template selected. Please select a template in settings.');
@@ -79,50 +82,86 @@ const DataSelectionPage = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate('/');
-  };
+  if (!category) {
+    return (
+      <Paper elevation={2} sx={{ p: 3, height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="h5" color="text.secondary" align="center">
+          Select a category to start generating your report
+        </Typography>
+      </Paper>
+    );
+  }
 
   return (
-    <div className="data-selection-container">
-      <ErrorNotification 
-        message={error} 
-        onClose={() => setError(null)} 
-      />
-      <button onClick={handleBack} className="back-button">← Back to Templates</button>
-      <h1>{categoryData.name} Report Findings</h1>
-      
-      <div className="data-list">
+    <Paper elevation={2} sx={{ p: 3, height: '80vh' }}>
+      <Snackbar 
+        open={!!error} 
+        autoHideDuration={6000} 
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      </Snackbar>
+
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h2" gutterBottom>
+          {categoryData.name} Findings
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Select and customize findings for your report
+        </Typography>
+      </Box>
+
+      <List sx={{ width: '100%' }}>
         {categoryData.findings.map((finding) => (
-          <div key={finding} className="data-item">
-            <input
-              type="checkbox"
+          <ListItem
+            key={finding}
+            divider
+            disablePadding
+          >
+            <Checkbox
               checked={selectedFindings.includes(finding)}
               onChange={() => handleCheckboxChange(finding)}
-              className="data-checkbox"
+              sx={{ ml: 1 }}
             />
-            <div className="item-details">
-              <div
-                className="finding-text"
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={(e) => handleFindingEdit(finding, e.target.innerText)}
-                dangerouslySetInnerHTML={{ __html: getFindingText(finding) }}
-              />
-            </div>
-          </div>
+            <ListItemText
+              primary={
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  defaultValue={finding}
+                  onBlur={(e) => handleFindingEdit(finding, e.target.value)}
+                  InputProps={{
+                    disableUnderline: !selectedFindings.includes(finding),
+                  }}
+                  sx={{
+                    '& .MuiInputBase-input': {
+                      cursor: selectedFindings.includes(finding) ? 'text' : 'default',
+                    }
+                  }}
+                  disabled={!selectedFindings.includes(finding)}
+                />
+              }
+            />
+          </ListItem>
         ))}
-      </div>
-      
-      <div className="print-controls">
-        <button 
-          className="print-button" 
+      </List>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Print />}
           onClick={handlePrint}
+          size="large"
+          disabled={selectedFindings.length === 0}
         >
-          Print PDF
-        </button>
-      </div>
-    </div>
+          Print Report
+        </Button>
+      </Box>
+    </Paper>
   );
 };
 

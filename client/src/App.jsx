@@ -1,18 +1,30 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CategorySelectionPage from './components/CategorySelectionPage';
-import DataSelectionPage from './components/DataSelectionPage';
-import TemplateSelectionPage from './components/TemplateSelectionPage';
+import { ThemeProvider, createTheme, Box } from '@mui/material';
+import ReportGeneratorPage from './components/ReportGeneratorPage';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<CategorySelectionPage />} />
-        <Route path="/select-findings" element={<DataSelectionPage />} />
-        <Route path="/settings" element={<TemplateSelectionPage />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ 
+        width: '100vw',
+        height: '100vh',
+        margin: 0,
+        padding: 0,
+      }}>
+        <ReportGeneratorPage />
+      </Box>
+    </ThemeProvider>
   );
 }
 

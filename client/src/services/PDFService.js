@@ -93,15 +93,6 @@ class PDFService {
         throw new Error('Received empty PDF file');
       }
 
-      // Check PDF header
-      const headerBytes = new Uint8Array(pdfBuffer.slice(0, 8));
-      const header = new TextDecoder().decode(headerBytes);
-      console.log('PDF header:', header);
-      
-      if (!header.startsWith('%PDF-')) {
-        throw new Error('Invalid PDF header: ' + header);
-      }
-
       return pdfBuffer;
     } catch (error) {
       console.error('Error fetching PDF:', error);
@@ -111,14 +102,13 @@ class PDFService {
 
   static async fillTemplate(templatePath, data) {
     try {
-      const templateUrl = `http://localhost:5002/api/templates/file${templatePath}`;
       console.log('Filling template:', {
-        url: templateUrl,
+        url: templatePath,
         data: data
       });
       
       // Fetch and validate PDF
-      const pdfBuffer = await this.fetchAndValidatePDF(templateUrl);
+      const pdfBuffer = await this.fetchAndValidatePDF(templatePath);
 
       // Load the PDF document
       const pdfDoc = await PDFDocument.load(pdfBuffer);
