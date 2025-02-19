@@ -147,7 +147,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
       >
         <List sx={{ width: "100%", overflow: "auto" }}>
           {allFindings.map((finding) => (
-            <ListItem key={finding} divider disablePadding>
+            <ListItem key={finding} disablePadding>
               <Checkbox
                 checked={selectedFindings.includes(finding)}
                 onChange={() => handleCheckboxChange(finding)}
