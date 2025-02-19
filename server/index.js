@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');           // Regular fs for sync operations
+const fsPromises = require('fs').promises;  // Promise-based fs
 const cors = require('cors');
+const templateRoutes = require('./routes/template');
 
 const app = express();
 const PORT = process.env.PORT || 5002;
@@ -9,12 +11,18 @@ const PORT = process.env.PORT || 5002;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/', templateRoutes);
+
+// Create templates directory if it doesn't exist
+const templatesDir = path.join(__dirname, 'templates');
+if (!fs.existsSync(templatesDir)) {
+  fs.mkdirSync(templatesDir);
+}
 
 // API Routes
 app.get('/api/templates', async (req, res) => {
   try {
-    const templatesDir = path.join(__dirname, '../client/public');
-    const files = await fs.readdir(templatesDir);
+    const files = await fsPromises.readdir(templatesDir);
     const pdfTemplates = files
       .filter(file => file.endsWith('.pdf'))
       .map(file => ({

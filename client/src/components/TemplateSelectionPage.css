@@ -32,4 +32,64 @@
 .template-card p {
   margin: 0;
   color: #666;
+}
+
+.template-card.selected {
+  border: 2px solid #007bff;
+  background-color: #f8f9ff;
+}
+
+.template-actions {
+  margin-top: 10px;
+}
+
+.preview-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.preview-button:hover {
+  background-color: #5a6268;
+}
+
+.preview-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.5);
+}
+
+.template-controls {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.confirm-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirm-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.confirm-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.2em;
+  color: #666;
 } 

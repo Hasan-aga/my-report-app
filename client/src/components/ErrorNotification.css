@@ -1,0 +1,52 @@
+.error-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+.error-content {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  padding: 12px 40px 12px 16px;
+  color: #c00;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.error-message {
+  display: block;
+  margin-right: 20px;
+}
+
+.error-close {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #c00;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.error-close:hover {
+  color: #a00;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+} 

@@ -1,18 +1,59 @@
-export const PDF_TEMPLATE_PATH = '/report-template.pdf';
+export const PDF_TEMPLATE_PATH = 'http://localhost:5002/api/templates/file/template.pdf';
 
 export const PDF_COORDINATES = {
-  date: { x: 450, y: 590 },
-  data: { x: 50, y: 500 }
-}; 
+  date: {
+    x: 450,  // Adjust this value for date position from left
+    y: 590   // Adjust this value for date position from bottom
+  },
+  data: {
+    x: 50,   // Adjust this value for text position from left
+    y: 550   // Adjust this value for starting position from bottom
+  }
+};
 
-export const SPACE = 20;
+// Space between lines
+export const SPACE = 25;  // Adjust this value for line spacing
 
 // Dummy data for demonstration
-export const REPORT_DATA = [
-    {  name: 'Report 1' },
-    {  name: 'Report 2' },
-    {  name: 'Report 3' },
-    {  name: 'Report 4' },
-    {  name: 'Report 5' }
-  ];
+export const REPORT_DATA = {
+  breast: {
+    name: 'Breast',
+    findings: [
+      'Both breasts are of normal fibre glandular appearance',
+      'No solid or cystic mass',
+      'No dilated ducts',
+      'Normal nipple and areolar region',
+      'Clear axilla'
+    ]
+  },
+  abdomen: {
+    name: 'Abdomen',
+    findings: [
+      'Normal liver size, normal echo texture, normal biliary passage',
+      'The gall bladder is of normal size and wall thickness, no stone',
+      'Both kidney are of normal size, conical thickness normal location',
+      'Normal central sinus echoes',
+      'Normal bladder'
+    ]
+  },
+  pelvis: {
+    name: 'Pelvis',
+    findings: [
+      'Normal uterus size and position',
+      'Normal endometrial thickness',
+      'Normal ovaries bilaterally',
+      'No free fluid in the pouch of Douglas'
+    ]
+  },
+  fetus: {
+    name: 'Fetus',
+    findings: [
+      'Single live fetus',
+      'Normal fetal cardiac activity',
+      'Normal fetal movements',
+      'Normal amniotic fluid volume',
+      'Placenta normal in position and appearance'
+    ]
+  }
+};
   
