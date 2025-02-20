@@ -40,42 +40,6 @@ class PDFService {
     return await PDFDocument.load(templateBytes)
   }
 
-  async fillTemplate(templatePath, data, coordinates) {
-    const pdfDoc = await this.loadTemplate(templatePath)
-    const page = pdfDoc.getPages()[0]
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
-
-    // Insert current date
-    const currentDate = new Date().toLocaleDateString()
-    page.drawText(currentDate, {
-      x: PDF_COORDINATES.date.x,
-      y: PDF_COORDINATES.date.y,
-      font,
-      size: 12
-    })
-
-    // Insert data items with bullet points
-    data.forEach((item, index) => {
-      // Draw bullet point
-      page.drawText("•", {
-        x: PDF_COORDINATES.data.x - 15,
-        y: PDF_COORDINATES.data.y - index * SPACE,
-        font,
-        size: 12
-      })
-
-      // Draw item name
-      page.drawText(item.name, {
-        x: PDF_COORDINATES.data.x,
-        y: PDF_COORDINATES.data.y - index * SPACE,
-        font,
-        size: 12
-      })
-    })
-
-    return await pdfDoc.save()
-  }
-
   async previewPDF(pdfBytes) {
     const blob = new Blob([pdfBytes], { type: "application/pdf" })
     return URL.createObjectURL(blob)
@@ -138,6 +102,17 @@ class PDFService {
       const pdfDoc = await PDFDocument.load(pdfBuffer)
       const page = pdfDoc.getPages()[0]
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+
+      // Insert current date
+      const currentDate = new Date().toLocaleDateString("en-CA") // This will format the date as yyyy-mm-dd
+      const formattedDate = currentDate.replace(/-/g, "/") // Replace '-' with '/' to get yyyy/mm/dd
+
+      page.drawText(formattedDate, {
+        x: PDF_COORDINATES.date.x,
+        y: PDF_COORDINATES.date.y,
+        font,
+        size: 12
+      })
 
       // Get page dimensions from template
       const { width } = page.getSize()
