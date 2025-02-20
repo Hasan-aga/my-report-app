@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Checkbox,
   List,
   ListItem,
   ListItemText,
@@ -12,73 +11,61 @@ import {
   Snackbar,
   TextField,
   Typography,
+  IconButton,
   useTheme
 } from "@mui/material"
-import { useState } from "react"
+import { Clear } from "@mui/icons-material"
+import { useState, useEffect } from "react"
 import { REPORT_DATA } from "../constants/config"
 import PDFService from "../services/PDFService"
 
 const DataSelectionPage = ({ category, templatePath }) => {
-  const [selectedFindings, setSelectedFindings] = useState([])
-  const [editedFindings, setEditedFindings] = useState({})
+  const [findings, setFindings] = useState([])
   const [notes, setNotes] = useState("")
   const [error, setError] = useState(null)
-  const [customFindings, setCustomFindings] = useState([])
   const theme = useTheme()
 
   const categoryData = REPORT_DATA[category]
-  const allFindings = [...(categoryData?.findings || []), ...customFindings]
 
-  const handleCheckboxChange = (finding) => {
-    setSelectedFindings((prev) => {
-      if (prev.includes(finding)) {
-        return prev.filter((f) => f !== finding)
-      } else {
-        return [...prev, finding]
-      }
+  // Initialize findings from category data
+  useEffect(() => {
+    if (categoryData?.findings) {
+      setFindings(categoryData.findings.map((finding) => ({ text: finding })))
+    }
+  }, [category])
+
+  const handleFindingChange = (index, newText) => {
+    setFindings((prev) => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], text: newText }
+      return updated.filter((finding) => finding.text.trim() !== "") // Remove empty findings
     })
   }
 
-  const handleFindingEdit = (originalFinding, newText) => {
-    setEditedFindings((prev) => ({
-      ...prev,
-      [originalFinding]: newText
-    }))
-  }
-
-  const getFindingText = (finding) => {
-    return editedFindings[finding] || finding
-  }
-
   const handleAddNewFinding = () => {
-    const newFinding = ""
-    setCustomFindings((prev) => [...prev, newFinding])
-    setSelectedFindings((prev) => [...prev, newFinding])
-    // Focus will be handled by autoFocus prop on TextField
+    setFindings((prev) => [...prev, { text: "" }])
+  }
+
+  const handleRemoveFinding = (index) => {
+    setFindings((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && e.target.value === "") {
+      e.preventDefault()
+      handleRemoveFinding(index)
+    }
   }
 
   const handlePrint = async () => {
     try {
-      console.log("Print request:", {
-        templatePath,
-        category,
-        selectedFindings
-      })
-
-      const finalFindings = selectedFindings.map((finding) =>
-        getFindingText(finding)
-      )
-
-      const selectedData =
-        finalFindings.length == 0
-          ? [{ category: "", findings: [], notes: notes.trim() }]
-          : [
-              {
-                category: categoryData.name,
-                findings: finalFindings,
-                notes: notes.trim()
-              }
-            ]
+      const selectedData = [
+        {
+          category: categoryData.name,
+          findings: findings.map((f) => f.text),
+          notes: notes.trim()
+        }
+      ]
 
       if (!templatePath) {
         throw new Error(
@@ -101,20 +88,15 @@ const DataSelectionPage = ({ category, templatePath }) => {
 
   const handleSave = async () => {
     try {
-      const finalFindings = selectedFindings.map((finding) =>
-        getFindingText(finding)
-      )
       const selectedData = [
         {
           category: categoryData.name,
-          findings: finalFindings,
+          findings: findings.map((f) => f.text),
           notes: notes.trim()
         }
       ]
 
       const pdfBytes = await PDFService.fillTemplate(templatePath, selectedData)
-
-      // Create blob and download
       const blob = new Blob([pdfBytes], { type: "application/pdf" })
       const url = URL.createObjectURL(blob)
       const link = document.createElement("a")
@@ -170,7 +152,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
           {categoryData.name} Findings
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Select and customize findings for your report
+          Edit or add findings for your report
         </Typography>
       </Box>
 
@@ -189,52 +171,40 @@ const DataSelectionPage = ({ category, templatePath }) => {
           }}
         >
           <List sx={{ width: "100%", overflow: "auto" }}>
-            {allFindings.map((finding) => (
-              <ListItem key={finding} disablePadding>
-                <Checkbox
-                  checked={selectedFindings.includes(finding)}
-                  onChange={() => handleCheckboxChange(finding)}
-                  sx={{
-                    ml: 1,
-                    color: theme.palette.primary.main,
-                    "&.Mui-checked": {
-                      color: theme.palette.primary.main
-                    }
-                  }}
-                />
+            {findings.map((finding, index) => (
+              <ListItem
+                key={index}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  "&:hover": {
+                    bgcolor: "action.hover"
+                  }
+                }}
+              >
                 <ListItemText
                   primary={
                     <TextField
                       fullWidth
                       variant="standard"
-                      defaultValue={finding}
-                      onBlur={(e) => handleFindingEdit(finding, e.target.value)}
-                      autoFocus={
-                        finding === allFindings[allFindings.length - 1] &&
-                        customFindings.includes(finding)
+                      value={finding.text}
+                      onChange={(e) =>
+                        handleFindingChange(index, e.target.value)
                       }
-                      InputProps={{
-                        disableUnderline: !selectedFindings.includes(finding),
-                        style: {
-                          opacity: 1 // Full opacity always
-                        }
-                      }}
-                      sx={{
-                        "& .MuiInputBase-input": {
-                          cursor: selectedFindings.includes(finding)
-                            ? "text"
-                            : "default",
-                          "&.Mui-disabled": {
-                            color: "text.primary", // Keep same color when disabled
-                            WebkitTextFillColor: "text.primary", // Override WebKit default
-                            opacity: 1 // Keep full opacity when disabled
-                          }
-                        }
-                      }}
-                      disabled={!selectedFindings.includes(finding)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      autoFocus={
+                        index === findings.length - 1 && finding.text === ""
+                      }
                     />
                   }
                 />
+                <IconButton
+                  size="small"
+                  onClick={() => handleRemoveFinding(index)}
+                  sx={{ ml: 1 }}
+                >
+                  <Clear fontSize="small" />
+                </IconButton>
               </ListItem>
             ))}
           </List>
@@ -249,7 +219,6 @@ const DataSelectionPage = ({ category, templatePath }) => {
               minHeight: 40
             }}
             size="small"
-            color={theme.palette.primary.main}
           >
             Add Finding
           </Button>
@@ -275,7 +244,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
               startIcon={<Download />}
               onClick={handleSave}
               size="large"
-              disabled={selectedFindings.length === 0}
+              disabled={findings.length === 0}
             >
               Save Report
             </Button>
@@ -284,7 +253,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
               startIcon={<Print />}
               onClick={handlePrint}
               size="large"
-              disabled={selectedFindings.length === 0}
+              disabled={findings.length === 0}
             >
               Print Report
             </Button>
