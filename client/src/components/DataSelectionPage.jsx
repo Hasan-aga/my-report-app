@@ -1,8 +1,9 @@
-import { Add, Print } from "@mui/icons-material"
+import { Add, Download, Print } from "@mui/icons-material"
 import {
   Alert,
   Box,
   Button,
+  ButtonGroup,
   Checkbox,
   List,
   ListItem,
@@ -98,6 +99,37 @@ const DataSelectionPage = ({ category, templatePath }) => {
     }
   }
 
+  const handleSave = async () => {
+    try {
+      const finalFindings = selectedFindings.map((finding) =>
+        getFindingText(finding)
+      )
+      const selectedData = [
+        {
+          category: categoryData.name,
+          findings: finalFindings,
+          notes: notes.trim()
+        }
+      ]
+
+      const pdfBytes = await PDFService.fillTemplate(templatePath, selectedData)
+
+      // Create blob and download
+      const blob = new Blob([pdfBytes], { type: "application/pdf" })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `${categoryData.name}_Report.pdf`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Save error:", error)
+      setError(error.message)
+    }
+  }
+
   if (!category) {
     return (
       <Paper
@@ -162,7 +194,13 @@ const DataSelectionPage = ({ category, templatePath }) => {
                 <Checkbox
                   checked={selectedFindings.includes(finding)}
                   onChange={() => handleCheckboxChange(finding)}
-                  sx={{ ml: 1 }}
+                  sx={{
+                    ml: 1,
+                    color: theme.palette.primary.main,
+                    "&.Mui-checked": {
+                      color: theme.palette.primary.main
+                    }
+                  }}
                 />
                 <ListItemText
                   primary={
@@ -178,7 +216,6 @@ const DataSelectionPage = ({ category, templatePath }) => {
                       InputProps={{
                         disableUnderline: !selectedFindings.includes(finding),
                         style: {
-                          color: "#283618", // Dark green for all text
                           opacity: 1 // Full opacity always
                         }
                       }}
@@ -188,8 +225,8 @@ const DataSelectionPage = ({ category, templatePath }) => {
                             ? "text"
                             : "default",
                           "&.Mui-disabled": {
-                            color: theme.palette.text.primary, // Keep same color when disabled
-                            WebkitTextFillColor: theme.palette.text.primary, // Override WebKit default
+                            color: "text.primary", // Keep same color when disabled
+                            WebkitTextFillColor: "text.primary", // Override WebKit default
                             opacity: 1 // Keep full opacity when disabled
                           }
                         }
@@ -212,6 +249,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
               minHeight: 40
             }}
             size="small"
+            color={theme.palette.primary.main}
           >
             Add Finding
           </Button>
@@ -231,15 +269,26 @@ const DataSelectionPage = ({ category, templatePath }) => {
         </Box>
 
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Print />}
-            onClick={handlePrint}
-            size="large"
-          >
-            Print Report
-          </Button>
+          <ButtonGroup variant="contained">
+            <Button
+              color="secondary"
+              startIcon={<Download />}
+              onClick={handleSave}
+              size="large"
+              disabled={selectedFindings.length === 0}
+            >
+              Save Report
+            </Button>
+            <Button
+              color="primary"
+              startIcon={<Print />}
+              onClick={handlePrint}
+              size="large"
+              disabled={selectedFindings.length === 0}
+            >
+              Print Report
+            </Button>
+          </ButtonGroup>
         </Box>
       </Box>
     </Paper>

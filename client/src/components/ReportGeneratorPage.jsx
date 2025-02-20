@@ -6,7 +6,8 @@ import {
   Paper,
   Radio,
   RadioGroup,
-  Typography
+  Typography,
+  useTheme
 } from "@mui/material"
 import Grid from "@mui/material/Grid2"
 import React, { useState } from "react"
@@ -15,6 +16,7 @@ import DataSelectionPage from "./DataSelectionPage"
 
 const ReportGeneratorPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("")
+  const theme = useTheme()
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -26,7 +28,11 @@ const ReportGeneratorPage = () => {
             <FormControl component="fieldset">
               <FormLabel
                 component="legend"
-                sx={{ fontSize: "1.2rem", mb: 2, color: "text.primary" }}
+                sx={{
+                  fontSize: "1.2rem",
+                  mb: 2,
+                  color: theme.palette.primary.contrastText
+                }}
               >
                 Report Categories
               </FormLabel>
@@ -38,7 +44,16 @@ const ReportGeneratorPage = () => {
                   <FormControlLabel
                     key={key}
                     value={key}
-                    control={<Radio />}
+                    control={
+                      <Radio
+                        sx={{
+                          color: theme.palette.secondary.main,
+                          "&.Mui-checked": {
+                            color: theme.palette.secondary.main
+                          }
+                        }}
+                      />
+                    }
                     label={
                       <Typography variant="subtitle1">
                         {category.name}
