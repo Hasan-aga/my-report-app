@@ -1,5 +1,10 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
-import { FONT_SIZES, PDF_COORDINATES, SPACE } from "../constants/config"
+import {
+  FONT_SIZES,
+  PDF_COORDINATES,
+  SPACE,
+  TITLE_TEXT
+} from "../constants/config"
 
 // Helper function for date formatting
 const formatDate = (date) => {
@@ -125,7 +130,7 @@ class PDFService {
       // Draw category
       if (data[0]?.category) {
         const categoryLines = wrapText(
-          data[0].category,
+          TITLE_TEXT + data[0].category,
           font,
           FONT_SIZES.title,
           startX,

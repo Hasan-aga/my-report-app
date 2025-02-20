@@ -23,6 +23,8 @@ export const FONT_SIZES = {
 // Space between lines
 export const SPACE = 25 // Adjust this value for line spacing
 
+export const TITLE_TEXT = "U/S of "
+
 // Dummy data for demonstration
 export const REPORT_DATA = {
   breast: {
