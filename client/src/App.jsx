@@ -55,6 +55,7 @@ function App() {
           </IconButton>
         </Box>
         <SettingsModal
+          currentTheme={mode}
           setTheme={setMode}
           open={openSettings}
           onClose={() => setOpenSettings(false)}

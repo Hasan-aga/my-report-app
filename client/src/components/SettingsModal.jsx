@@ -13,9 +13,8 @@ import React from "react"
 import { useSettings } from "../../hooks/useSettings"
 import { DarkMode, LightMode } from "@mui/icons-material"
 
-const SettingsModal = ({ open, onClose, setTheme }) => {
+const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
   const { fontSize, setFontSize } = useSettings()
-  const [themeMode, setThemeMode] = React.useState("light") // State for theme mode
 
   const handleFontSizeChange = (event, value) => {
     setFontSize(value)
@@ -25,7 +24,6 @@ const SettingsModal = ({ open, onClose, setTheme }) => {
   const handleThemeChange = (event, newTheme) => {
     if (newTheme !== null) {
       setTheme(newTheme)
-      setThemeMode(newTheme)
       localStorage.setItem("theme", newTheme) // Save to localStorage
     }
   }
@@ -76,7 +74,7 @@ const SettingsModal = ({ open, onClose, setTheme }) => {
           <Typography color="text.primary">Theme</Typography>
           <ToggleButtonGroup
             size="small"
-            value={themeMode}
+            value={currentTheme}
             exclusive
             onChange={handleThemeChange}
             aria-label="Theme selection"
