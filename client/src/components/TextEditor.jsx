@@ -39,7 +39,7 @@ const TextEditor = ({ initialText, onSave, onCancel }) => {
           sx={{ mt: 2 }}
         />
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "space-between", px: 2, pb: 2 }}>
+      <DialogActions sx={{ px: 2, pb: 2 }}>
         <IconButton onClick={onCancel} color="inherit" aria-label="Cancel">
           <Clear />
         </IconButton>
