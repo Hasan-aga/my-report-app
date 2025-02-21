@@ -1,0 +1,6 @@
+@font-face {
+  font-family: "rubik"; /* Replace with the name of your font */
+  src: url("./rubik.ttf") format("truetype"); /* Add other formats as needed */
+  font-weight: normal; /* Adjust as necessary */
+  font-style: normal; /* Adjust as necessary */
+}

@@ -4,6 +4,7 @@ import { Box, IconButton, ThemeProvider, createTheme } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { useSettings } from "../hooks/useSettings" // Import useSettings
 import "./App.css"
+import "./assets/fonts/fonts.css"
 import ReportGeneratorPage from "./components/ReportGeneratorPage" // Keep this import
 import SettingsModal from "./components/SettingsModal"
 import { darkTheme, lightTheme } from "./themes"

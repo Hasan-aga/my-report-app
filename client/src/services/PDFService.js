@@ -1,10 +1,12 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
+import fontkit from "@pdf-lib/fontkit"
+import { PDFDocument, rgb } from "pdf-lib"
 import {
   FONT_SIZES,
   PDF_COORDINATES,
   SPACE,
   TITLE_TEXT
 } from "../constants/config"
+import rubik from "../assets/fonts/Rubik.ttf"
 
 // Helper function for date formatting
 const formatDate = (date) => {
@@ -105,9 +107,21 @@ class PDFService {
     try {
       const pdfBuffer = await this.fetchAndValidatePDF(templatePath)
       const pdfDoc = await PDFDocument.load(pdfBuffer)
+      pdfDoc.registerFontkit(fontkit)
       const page = pdfDoc.getPages()[0]
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+      const fontBytes = await fetch(rubik)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Failed to fetch font: ${res.statusText}`)
+          }
+          return res.arrayBuffer()
+        })
+        .catch((error) => {
+          console.error("Error fetching font:", error)
+          throw error // Rethrow the error to be caught in the outer try-catch
+        })
 
+      const font = await pdfDoc.embedFont(fontBytes)
       // Insert current date
       const currentDate = new Date().toLocaleDateString("en-CA") // This will format the date as yyyy-mm-dd
       const formattedDate = currentDate.replace(/-/g, "/") // Replace '-' with '/' to get yyyy/mm/dd
