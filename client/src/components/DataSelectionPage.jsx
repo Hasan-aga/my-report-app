@@ -1,9 +1,9 @@
-import { Add, Download, Print } from "@mui/icons-material"
+import { Add, Clear, Edit, Download, Print } from "@mui/icons-material"
 import {
   Alert,
   Box,
   Button,
-  ButtonGroup,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -11,18 +11,19 @@ import {
   Snackbar,
   TextField,
   Typography,
-  IconButton,
   useTheme
 } from "@mui/material"
-import { Clear } from "@mui/icons-material"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
 import PDFService from "../services/PDFService"
+import TextEditor from "./TextEditor"
 
 const DataSelectionPage = ({ category, templatePath }) => {
   const [findings, setFindings] = useState([])
   const [notes, setNotes] = useState("")
   const [error, setError] = useState(null)
+  const [editingIndex, setEditingIndex] = useState(null)
+  const [showEditor, setShowEditor] = useState(false)
   const theme = useTheme()
 
   const categoryData = REPORT_DATA[category]
@@ -48,6 +49,22 @@ const DataSelectionPage = ({ category, templatePath }) => {
 
   const handleRemoveFinding = (index) => {
     setFindings((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleEditFinding = (index) => {
+    setEditingIndex(index)
+    setShowEditor(true)
+  }
+
+  const handleEditorSave = (newText) => {
+    handleFindingChange(editingIndex, newText)
+    setShowEditor(false)
+    setEditingIndex(null)
+  }
+
+  const handleEditorCancel = () => {
+    setShowEditor(false)
+    setEditingIndex(null)
   }
 
   const handleKeyDown = (e, index) => {
@@ -205,6 +222,13 @@ const DataSelectionPage = ({ category, templatePath }) => {
                 >
                   <Clear fontSize="small" />
                 </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={() => handleEditFinding(index)}
+                  sx={{ ml: 1 }}
+                >
+                  <Edit fontSize="small" />
+                </IconButton>
               </ListItem>
             ))}
           </List>
@@ -237,27 +261,41 @@ const DataSelectionPage = ({ category, templatePath }) => {
           />
         </Box>
 
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <ButtonGroup variant="contained">
-            <Button
-              color="secondary"
-              startIcon={<Download />}
-              onClick={handleSave}
-              size="large"
-              disabled={findings.length === 0}
-            >
-              Save Report
-            </Button>
-            <Button
-              color="primary"
-              startIcon={<Print />}
-              onClick={handlePrint}
-              size="large"
-              disabled={findings.length === 0}
-            >
-              Print Report
-            </Button>
-          </ButtonGroup>
+        {showEditor && (
+          <TextEditor
+            initialText={findings[editingIndex]?.text || ""}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
+        )}
+
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 35,
+            right: 20,
+            display: "flex",
+            gap: 1
+          }}
+        >
+          <IconButton
+            color="secondary"
+            onClick={handleSave}
+            disabled={findings.length === 0}
+            aria-label="Save Report"
+            title="Save the report as a PDF"
+          >
+            <Download />
+          </IconButton>
+          <IconButton
+            color="primary"
+            onClick={handlePrint}
+            disabled={findings.length === 0}
+            aria-label="Print Report"
+            title="Print the report"
+          >
+            <Print />
+          </IconButton>
         </Box>
       </Box>
     </Paper>
