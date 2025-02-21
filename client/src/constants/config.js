@@ -3,7 +3,7 @@ export const PDF_TEMPLATE_PATH =
 
 export const PDF_COORDINATES = {
   date: {
-    x: 445, // Adjust this value for date position from left
+    x: 430, // Adjust this value for date position from left
     y: 590 // Adjust this value for date position from bottom
   },
   data: {
