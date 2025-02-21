@@ -1,3 +1,4 @@
+import "./App.css"
 import { Brightness4, Brightness7 } from "@mui/icons-material"
 import { Box, IconButton, ThemeProvider, createTheme } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
