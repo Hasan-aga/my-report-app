@@ -1,4 +1,4 @@
-import { Add, Clear, Edit, Download, Print } from "@mui/icons-material"
+import { Add, Clear, Download, Edit, Print } from "@mui/icons-material"
 import {
   Alert,
   Box,
@@ -10,21 +10,20 @@ import {
   Paper,
   Snackbar,
   TextField,
-  Typography,
-  useTheme
+  Typography
 } from "@mui/material"
 import { useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
 import PDFService from "../services/PDFService"
 import TextEditor from "./TextEditor"
+import SettingsModal from "./SettingsModal"
 
 const DataSelectionPage = ({ category, templatePath }) => {
   const [findings, setFindings] = useState([])
-  const [notes, setNotes] = useState("")
   const [error, setError] = useState(null)
   const [editingIndex, setEditingIndex] = useState(null)
   const [showEditor, setShowEditor] = useState(false)
-  const theme = useTheme()
+  const [openSettings, setOpenSettings] = useState(false)
 
   const categoryData = REPORT_DATA[category]
 
@@ -79,8 +78,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
       const selectedData = [
         {
           category: categoryData.name,
-          findings: findings.map((f) => f.text),
-          notes: notes.trim()
+          findings: findings.map((f) => f.text)
         }
       ]
 
@@ -108,8 +106,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
       const selectedData = [
         {
           category: categoryData.name,
-          findings: findings.map((f) => f.text),
-          notes: notes.trim()
+          findings: findings.map((f) => f.text)
         }
       ]
 
@@ -248,19 +245,6 @@ const DataSelectionPage = ({ category, templatePath }) => {
           </Button>
         </Box>
 
-        <Box sx={{ mb: 2 }}>
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            variant="outlined"
-            label="Additional Notes (Optional)"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Add any additional notes here..."
-          />
-        </Box>
-
         {showEditor && (
           <TextEditor
             initialText={findings[editingIndex]?.text || ""}
@@ -298,6 +282,11 @@ const DataSelectionPage = ({ category, templatePath }) => {
           </IconButton>
         </Box>
       </Box>
+
+      <SettingsModal
+        open={openSettings}
+        onClose={() => setOpenSettings(false)}
+      />
     </Paper>
   )
 }

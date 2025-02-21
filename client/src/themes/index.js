@@ -1,47 +1,53 @@
-export const lightTheme = {
+// client/src/themes/index.js
+export const lightTheme = (fontSize) => ({
   palette: {
     mode: "light",
     primary: {
-      main: "#268bd2", // Solarized blue
-      light: "#2aa198", // Solarized cyan
-      contrastText: "#073642" // Solarized dark background
+      main: "#268bd2",
+      light: "#2aa198",
+      contrastText: "#073642"
     },
     secondary: {
-      light: "#859900", // Solarized green
-      main: "#d33682" // Solarized magenta
+      light: "#859900",
+      main: "#d33682"
     },
     background: {
-      default: "#eee8d5", // Solarized light secondary background
-      paper: "#fdf6e3" // Solarized light background
+      default: "#eee8d5",
+      paper: "#fdf6e3"
     },
     text: {
-      primary: "#073642", // Solarized dark background
-      secondary: "#586e75" // Solarized base01
+      primary: "#073642",
+      secondary: "#586e75"
     }
+  },
+  typography: {
+    fontSize: fontSize // Use the fontSize from settings
   }
-}
+})
 
-// ... existing code ...
-export const darkTheme = {
+export const darkTheme = (fontSize) => ({
   palette: {
     mode: "dark",
     primary: {
-      main: "#BD93F9", // Dracula purple
-      light: "#FF79C6", // Dracula pink
-      contrastText: "#282A36" // Changed: Should contrast with primary.main
+      main: "#BD93F9",
+      light: "#FF79C6",
+      contrastText: "#282A36"
     },
     secondary: {
-      light: "#50FA7B", // Dracula green
-      main: "#FF79C6", // Dracula pink
-      contrastText: "#282A36" // Added: Should contrast with secondary.main
+      light: "#50FA7B",
+      main: "#FF79C6",
+      contrastText: "#282A36"
     },
     background: {
-      default: "#282A36", // Dracula background
-      paper: "#44475A" // Dracula current line
+      default: "#282A36",
+      paper: "#44475A"
     },
     text: {
-      primary: "#F8F8F2", // Added: Dracula foreground
-      secondary: "#F1f1f1" // Added: Dracula comment
+      primary: "#F8F8F2",
+      secondary: "#F1f1f1"
     }
+  },
+  typography: {
+    fontSize: fontSize // Use the fontSize from settings
   }
-}
+})

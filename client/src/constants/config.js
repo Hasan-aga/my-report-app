@@ -19,6 +19,8 @@ export const FONT_SIZES = {
   notes: 12, // For notes
   date: 12 // For date
 }
+// ui font size
+export const UI_FONT_SIZE = 16
 
 // Space between lines
 export const SPACE = 25 // Adjust this value for line spacing

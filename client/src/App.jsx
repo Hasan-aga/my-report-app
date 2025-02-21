@@ -1,29 +1,31 @@
-import "./App.css"
-import { Brightness4, Brightness7 } from "@mui/icons-material"
+// client/src/App.jsx
+import { Settings } from "@mui/icons-material"
 import { Box, IconButton, ThemeProvider, createTheme } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
-import ReportGeneratorPage from "./components/ReportGeneratorPage"
+import { useSettings } from "../hooks/useSettings" // Import useSettings
+import "./App.css"
+import ReportGeneratorPage from "./components/ReportGeneratorPage" // Keep this import
+import SettingsModal from "./components/SettingsModal"
 import { darkTheme, lightTheme } from "./themes"
 
 function App() {
+  const { fontSize } = useSettings() // Get fontSize from context
+  const [openSettings, setOpenSettings] = useState(false)
   const [mode, setMode] = useState(() => {
-    // Get saved theme from localStorage or default to light
     return localStorage.getItem("theme") || "light"
   })
 
-  // Save theme preference whenever it changes
   useEffect(() => {
     localStorage.setItem("theme", mode)
   }, [mode])
 
   const theme = useMemo(
-    () => createTheme(mode === "light" ? lightTheme : darkTheme),
-    [mode]
+    () =>
+      createTheme(
+        mode === "light" ? lightTheme(fontSize) : darkTheme(fontSize)
+      ),
+    [mode, fontSize]
   )
-
-  const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"))
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -36,13 +38,27 @@ function App() {
           backgroundColor: "background.default"
         }}
       >
-        <IconButton
-          onClick={toggleTheme}
-          color={theme.palette.text.primary}
-          sx={{ position: "absolute", top: 16, right: 16 }}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            display: "flex",
+            gap: 1
+          }}
         >
-          {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
-        </IconButton>
+          <IconButton
+            onClick={() => setOpenSettings(true)} // Open settings modal
+            color={theme.palette.text.primary}
+          >
+            <Settings />
+          </IconButton>
+        </Box>
+        <SettingsModal
+          setTheme={setMode}
+          open={openSettings}
+          onClose={() => setOpenSettings(false)}
+        />
         <ReportGeneratorPage />
       </Box>
     </ThemeProvider>
