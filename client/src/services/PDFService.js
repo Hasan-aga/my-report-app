@@ -1,12 +1,12 @@
 import fontkit from "@pdf-lib/fontkit"
 import { PDFDocument, rgb } from "pdf-lib"
+import rubik from "../assets/fonts/Rubik.ttf"
 import {
   FONT_SIZES,
   PDF_COORDINATES,
   SPACE,
   TITLE_TEXT
 } from "../constants/config"
-import rubik from "../assets/fonts/Rubik.ttf"
 
 // Helper function for date formatting
 const formatDate = (date) => {
@@ -118,13 +118,12 @@ class PDFService {
         })
         .catch((error) => {
           console.error("Error fetching font:", error)
-          throw error // Rethrow the error to be caught in the outer try-catch
+          throw error
         })
 
       const font = await pdfDoc.embedFont(fontBytes)
-      // Insert current date
-      const currentDate = new Date().toLocaleDateString("en-CA") // This will format the date as yyyy-mm-dd
-      const formattedDate = currentDate.replace(/-/g, "/") // Replace '-' with '/' to get yyyy/mm/dd
+      const currentDate = new Date().toLocaleDateString("en-CA")
+      const formattedDate = currentDate.replace(/-/g, "/")
 
       page.drawText(formattedDate, {
         x: PDF_COORDINATES.date.x,
@@ -133,12 +132,9 @@ class PDFService {
         size: 12
       })
 
-      // Get page dimensions from template
       const { width } = page.getSize()
-
-      // Calculate text boundaries
       const startX = PDF_COORDINATES.data.x
-      const endX = width - startX // Mirror left margin on right side
+      const endX = width - startX
       let currentY = PDF_COORDINATES.data.y
 
       // Draw category
@@ -168,21 +164,34 @@ class PDFService {
         let currentPage = page
 
         for (const finding of data[0].findings) {
-          const lines = wrapText(
-            finding,
-            font,
-            FONT_SIZES.content,
-            startX,
-            endX - 20 // Account for bullet point
-          )
+          // Split finding into paragraphs by line breaks
+          const paragraphs = finding.split("\n")
+          let totalLines = []
+
+          // Wrap each paragraph separately
+          paragraphs.forEach((paragraph) => {
+            const wrappedLines = wrapText(
+              paragraph.trim(),
+              font,
+              FONT_SIZES.content,
+              startX,
+              endX - 20
+            )
+            totalLines = [...totalLines, ...wrappedLines]
+            // Add an empty line between paragraphs if this isn't the last paragraph
+            if (paragraph !== paragraphs[paragraphs.length - 1]) {
+              totalLines.push("")
+            }
+          })
 
           // Check if we need a new page
-          if (currentY < SPACE * 2) {
+          const requiredHeight = totalLines.length * SPACE + SPACE
+          if (currentY - requiredHeight < SPACE * 2) {
             currentPage = pdfDoc.addPage()
             currentY = PDF_COORDINATES.data.y
           }
 
-          // Draw bullet point
+          // Draw bullet point at the top of the finding
           currentPage.drawText("•", {
             x: startX - 15,
             y: currentY,
@@ -191,18 +200,21 @@ class PDFService {
             color: rgb(0, 0, 0)
           })
 
-          // Draw wrapped finding text
-          lines.forEach((line, index) => {
-            currentPage.drawText(line, {
-              x: startX,
-              y: currentY - index * SPACE,
-              size: FONT_SIZES.content,
-              font,
-              color: rgb(0, 0, 0)
-            })
+          // Draw all lines
+          totalLines.forEach((line, index) => {
+            if (line !== "") {
+              // Skip drawing empty lines (paragraph breaks)
+              currentPage.drawText(line, {
+                x: startX,
+                y: currentY - index * SPACE,
+                size: FONT_SIZES.content,
+                font,
+                color: rgb(0, 0, 0)
+              })
+            }
           })
 
-          currentY -= lines.length * SPACE + SPACE
+          currentY -= totalLines.length * SPACE + SPACE
         }
 
         // Draw notes if they exist
