@@ -1,7 +1,7 @@
-// client/src/components/SettingsModal.jsx
+import { Clear, DarkMode, LightMode } from "@mui/icons-material" // Import Clear icon
 import {
   Box,
-  Button,
+  IconButton,
   Modal,
   Slider,
   Stack,
@@ -11,7 +11,6 @@ import {
 } from "@mui/material"
 import React from "react"
 import { useSettings } from "../../hooks/useSettings"
-import { DarkMode, LightMode } from "@mui/icons-material"
 
 const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
   const { fontSize, setFontSize } = useSettings()
@@ -96,9 +95,9 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           </ToggleButtonGroup>
         </Stack>
         <Box mt={2} display="flex" justifyContent="flex-end">
-          <Button onClick={onClose} variant="contained">
-            Close
-          </Button>
+          <IconButton onClick={onClose} color="inherit">
+            <Clear /> {/* Use Clear icon instead of button */}
+          </IconButton>
         </Box>
       </Box>
     </Modal>
