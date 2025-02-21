@@ -95,7 +95,7 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           </ToggleButtonGroup>
         </Stack>
         <Box mt={2} display="flex" justifyContent="flex-end">
-          <IconButton onClick={onClose} color="inherit">
+          <IconButton title="close" onClick={onClose} color="secondary">
             <Clear /> {/* Use Clear icon instead of button */}
           </IconButton>
         </Box>
