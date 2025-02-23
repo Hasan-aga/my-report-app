@@ -13,11 +13,26 @@ A web application for generating and printing reports from selected data.
 
 ## Project Structure
 
+this project is made up of:
+
+1. An ExpressJs backend server: which serves the client and the pdf template.
+2. A React client (created with Vite) which presents user with some data and enables editing and printing that data.
+
 ## Getting started
 
-## Setup Instructions
+To install the app we have a Docker Compose file that spins up two containers (server & client):
+
+```
+docker compose up -d
+```
+
+You can then visit your app at http://localhost:80
+The app gets a pdf template from its backend and fills that template with data. this data is currently hardcoded in the client source code (config.js).
+
+## Development Setup Instructions
 
 ### Server Setup
+
 1. Navigate to the server directory:
    ```bash
    cd server
@@ -33,6 +48,7 @@ A web application for generating and printing reports from selected data.
    Server will run on http://localhost:5002
 
 ### Client Setup
+
 1. Navigate to the client directory:
    ```bash
    cd client
@@ -46,18 +62,3 @@ A web application for generating and printing reports from selected data.
    npm run dev
    ```
    Client will run on http://localhost:5001
-
-### Now, to start the project:
-Open two terminal windows
-In the first terminal:
-```bash
-cd server
-npm run dev
-```
-In the second terminal:
-```bash
-cd client
-npm run dev
-```
-
-
