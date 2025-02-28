@@ -132,6 +132,23 @@ class PDFService {
         size: 12
       })
 
+      // Draw patient name
+      if (data[0]?.patientName) {
+        const patientName = data[0].patientName
+        const textWidth = font.widthOfTextAtSize(
+          patientName,
+          FONT_SIZES.content
+        )
+        const adjustedX = PDF_COORDINATES.patient.x - 2 * textWidth
+
+        page.drawText(patientName, {
+          x: adjustedX,
+          y: PDF_COORDINATES.patient.y,
+          font,
+          size: FONT_SIZES.content
+        })
+      }
+
       const { width } = page.getSize()
       const startX = PDF_COORDINATES.data.x
       const endX = width - startX

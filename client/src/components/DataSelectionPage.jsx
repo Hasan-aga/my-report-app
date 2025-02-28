@@ -15,8 +15,8 @@ import {
 import { useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
 import PDFService from "../services/PDFService"
-import TextEditor from "./TextEditor"
 import SettingsModal from "./SettingsModal"
+import TextEditor from "./TextEditor"
 
 const DataSelectionPage = ({ category, templatePath }) => {
   const [findings, setFindings] = useState([])
@@ -24,6 +24,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
   const [editingIndex, setEditingIndex] = useState(null)
   const [showEditor, setShowEditor] = useState(false)
   const [openSettings, setOpenSettings] = useState(false)
+  const [patientName, setPatientName] = useState("")
 
   const categoryData = REPORT_DATA[category]
 
@@ -78,7 +79,8 @@ const DataSelectionPage = ({ category, templatePath }) => {
       const selectedData = [
         {
           category: categoryData.name,
-          findings: findings.map((f) => f.text)
+          findings: findings.map((f) => f.text),
+          patientName: patientName
         }
       ]
 
@@ -106,7 +108,8 @@ const DataSelectionPage = ({ category, templatePath }) => {
       const selectedData = [
         {
           category: categoryData.name,
-          findings: findings.map((f) => f.text)
+          findings: findings.map((f) => f.text),
+          patientName: patientName
         }
       ]
 
@@ -161,13 +164,36 @@ const DataSelectionPage = ({ category, templatePath }) => {
         </Alert>
       </Snackbar>
 
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h2" gutterBottom>
-          {categoryData.name} Findings
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Edit or add findings for your report
-        </Typography>
+      <Box
+        sx={{
+          mb: 4,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
+      >
+        <Box>
+          <Typography variant="h4" component="h2" gutterBottom>
+            {categoryData.name} Findings
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Edit or add findings for your report
+          </Typography>
+        </Box>
+        <Box sx={{ width: "400px" }}>
+          <TextField
+            fullWidth
+            label="Patient Name (Optional)"
+            variant="outlined"
+            size="small"
+            value={patientName}
+            onChange={(e) => setPatientName(e.target.value)}
+            inputProps={{
+              "aria-label": "Patient Name",
+              "aria-describedby": "patient-name-description"
+            }}
+          />
+        </Box>
       </Box>
 
       <Box

@@ -6,6 +6,10 @@ export const PDF_COORDINATES = {
     x: 430, // Adjust this value for date position from left
     y: 590 // Adjust this value for date position from bottom
   },
+  patient: {
+    x: 485,
+    y: 610
+  },
   data: {
     x: 50, // Adjust this value for text position from left
     y: 550 // Adjust this value for starting position from bottom
