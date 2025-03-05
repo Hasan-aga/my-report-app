@@ -104,10 +104,10 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           alignContent="center"
           mt={2}
         >
-          <Typography variant="subtitle1" color="text.primary">
+          <Typography variant="caption" color="text.secondary">
             Commit SHA
           </Typography>
-          <Typography variant="subtitle1" color="text.primary">
+          <Typography variant="caption" color="text.secondary">
             {commitSHA}
           </Typography>
         </Stack>
@@ -117,10 +117,10 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           alignContent="center"
           mt={2}
         >
-          <Typography variant="subtitle1" color="text.primary">
+          <Typography variant="caption" color="text.secondary">
             Commit Message
           </Typography>
-          <Typography variant="subtitle1" color="text.primary">
+          <Typography variant="caption" color="text.secondary">
             {commitMessage}
           </Typography>
         </Stack>
