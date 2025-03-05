@@ -1,8 +1,10 @@
+import { Print } from "@mui/icons-material"
 import {
   Box,
   FormControl,
   FormControlLabel,
   FormLabel,
+  IconButton,
   Paper,
   Radio,
   RadioGroup,
@@ -10,13 +12,30 @@ import {
   useTheme
 } from "@mui/material"
 import Grid from "@mui/material/Grid2"
-import React, { useState } from "react"
+import { useState } from "react"
 import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config"
+import PDFService from "../services/PDFService"
 import DataSelectionPage from "./DataSelectionPage"
 
 const ReportGeneratorPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("")
   const theme = useTheme()
+
+  const handlePrint = async () => {
+    try {
+      const templatePath = PDF_TEMPLATE_PATH // Assuming PDF_TEMPLATE_PATH is the path to the vanilla template
+      const pdfBytes = await PDFService.getTemplate(templatePath)
+
+      if (!pdfBytes || pdfBytes.length === 0) {
+        throw new Error("Generated PDF is empty")
+      }
+
+      await PDFService.printPDF(pdfBytes)
+    } catch (error) {
+      console.error("Print error:", error)
+      // Handle error (e.g., show a notification)
+    }
+  }
 
   return (
     <Box
@@ -87,6 +106,27 @@ const ReportGeneratorPage = () => {
             />
           </Grid>
         </Grid>
+        <IconButton
+          color="primary"
+          onClick={handlePrint}
+          aria-label="Print Report"
+          title="Print the report"
+          sx={{
+            position: "fixed",
+            bottom: 35,
+            right: 20,
+            bgcolor: "background.paper",
+            boxShadow: 2,
+            borderRadius: "50%",
+            width: 40,
+            height: 40,
+            "&:hover": {
+              bgcolor: "action.hover"
+            }
+          }}
+        >
+          <Print />
+        </IconButton>
       </Box>
     </Box>
   )

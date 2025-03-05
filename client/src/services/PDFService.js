@@ -103,6 +103,12 @@ class PDFService {
     }
   }
 
+  static async getTemplate(templatePath) {
+    const pdfBuffer = await this.fetchAndValidatePDF(templatePath)
+    const pdfDoc = await PDFDocument.load(pdfBuffer)
+    return await pdfDoc.save()
+  }
+
   static async fillTemplate(templatePath, data) {
     try {
       const pdfBuffer = await this.fetchAndValidatePDF(templatePath)
