@@ -16,7 +16,7 @@ We also have a deployment script that builds the docker images.
 To install the app we have a Docker Compose file that spins up two containers (server & client):
 
 ```
-docker compose up -d
+docker compose up --build -d
 ```
 
 You can then visit your app at http://localhost:80
