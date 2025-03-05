@@ -9,6 +9,8 @@ this project is made up of:
 1. An ExpressJs backend server: which serves the client and the pdf template.
 2. A React client (created with Vite) which presents user with some data and enables editing and printing that data.
 
+We also have a deployment script that builds the docker images.
+
 ## Getting started
 
 To install the app we have a Docker Compose file that spins up two containers (server & client):
