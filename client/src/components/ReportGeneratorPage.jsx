@@ -106,27 +106,29 @@ const ReportGeneratorPage = () => {
             />
           </Grid>
         </Grid>
-        <IconButton
-          color="primary"
-          onClick={handlePrint}
-          aria-label="Print Report"
-          title="Print the report"
-          sx={{
-            position: "fixed",
-            bottom: 35,
-            right: 20,
-            bgcolor: "background.paper",
-            boxShadow: 2,
-            borderRadius: "50%",
-            width: 40,
-            height: 40,
-            "&:hover": {
-              bgcolor: "action.hover"
-            }
-          }}
-        >
-          <Print />
-        </IconButton>
+        {selectedCategory ? null : (
+          <IconButton
+            color="primary"
+            onClick={handlePrint}
+            aria-label="Print Report"
+            title="Print the report"
+            sx={{
+              position: "fixed",
+              bottom: 35,
+              right: 20,
+              bgcolor: "background.paper",
+              boxShadow: 2,
+              borderRadius: "50%",
+              width: 40,
+              height: 40,
+              "&:hover": {
+                bgcolor: "action.hover"
+              }
+            }}
+          >
+            <Print />
+          </IconButton>
+        )}
       </Box>
     </Box>
   )
