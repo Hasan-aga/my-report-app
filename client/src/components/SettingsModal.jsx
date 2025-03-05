@@ -46,9 +46,14 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           borderRadius: 2
         }}
       >
-        <Typography variant="h6" component="h2" color="text.primary">
-          Settings
-        </Typography>
+        <Box mt={2} display="flex" justifyContent="space-between">
+          <Typography variant="h6" component="h2" color="text.primary">
+            Settings
+          </Typography>
+          <IconButton title="close" onClick={onClose} color="secondary">
+            <Clear /> {/* Use Clear icon instead of button */}
+          </IconButton>
+        </Box>
         <Stack
           spacing={2}
           direction={"row"}
@@ -72,7 +77,7 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           direction={"row"}
           justifyContent={"space-between"}
           alignContent="center"
-          mt={2}
+          mt={1}
         >
           <Typography color="text.primary">Theme</Typography>
           <ToggleButtonGroup
@@ -98,11 +103,14 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
+        <Typography variant="h6" color="text.secondary" mt={2}>
+          About
+        </Typography>
         <Stack
           direction={"row"}
           justifyContent={"space-between"}
           alignContent="center"
-          mt={2}
+          mt={1}
         >
           <Typography variant="caption" color="text.secondary">
             Commit SHA
@@ -124,11 +132,6 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
             {commitMessage}
           </Typography>
         </Stack>
-        <Box mt={2} display="flex" justifyContent="flex-end">
-          <IconButton title="close" onClick={onClose} color="secondary">
-            <Clear /> {/* Use Clear icon instead of button */}
-          </IconButton>
-        </Box>
       </Box>
     </Modal>
   )
