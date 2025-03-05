@@ -19,10 +19,21 @@ if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
     # Pull the latest changes
     git pull origin main
 
-    # Build and restart containers
-    docker compose up --build -d
+    # Get the latest commit SHA and message
+    COMMIT_SHA=$(git rev-parse --short HEAD)  # Use short SHA for brevity
+    COMMIT_MESSAGE=$(git log -1 --pretty=%B | tr -d '\n')  # Remove newlines for Docker
+
+    # Export commit info as environment variables
+    export COMMIT_SHA
+    export COMMIT_MESSAGE
+
+    # Build and restart containers with commit info
+    docker compose build --build-arg COMMIT_SHA="$COMMIT_SHA" --build-arg COMMIT_MESSAGE="$COMMIT_MESSAGE"
+    docker compose up -d
 
     echo "Deployment completed successfully."
+    echo "Commit SHA: $COMMIT_SHA"
+    echo "Commit Message: $COMMIT_MESSAGE"
 else
     echo "No new changes. Skipping deployment."
 fi

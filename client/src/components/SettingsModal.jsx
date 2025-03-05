@@ -27,6 +27,10 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
     }
   }
 
+  const commitSHA = import.meta.env.VITE_COMMIT_SHA || "local-dev"
+  const commitMessage =
+    import.meta.env.VITE_COMMIT_MESSAGE || "No commit info available"
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -93,6 +97,32 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
               <DarkMode />
             </ToggleButton>
           </ToggleButtonGroup>
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignContent="center"
+          mt={2}
+        >
+          <Typography variant="subtitle1" color="text.primary">
+            Commit SHA
+          </Typography>
+          <Typography variant="subtitle1" color="text.primary">
+            {commitSHA}
+          </Typography>
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignContent="center"
+          mt={2}
+        >
+          <Typography variant="subtitle1" color="text.primary">
+            Commit Message
+          </Typography>
+          <Typography variant="subtitle1" color="text.primary">
+            {commitMessage}
+          </Typography>
         </Stack>
         <Box mt={2} display="flex" justifyContent="flex-end">
           <IconButton title="close" onClick={onClose} color="secondary">

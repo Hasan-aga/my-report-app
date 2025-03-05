@@ -5,6 +5,9 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        - COMMIT_SHA=${COMMIT_SHA:-unknown}
+        - COMMIT_MESSAGE=${COMMIT_MESSAGE:-unknown}
     ports:
       - "80:80"
     environment:
