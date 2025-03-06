@@ -24,7 +24,7 @@ const ReportGeneratorPage = () => {
   const handlePrint = async () => {
     try {
       const templatePath = PDF_TEMPLATE_PATH // Assuming PDF_TEMPLATE_PATH is the path to the vanilla template
-      const pdfBytes = await PDFService.getTemplate(templatePath)
+      const pdfBytes = await PDFService.getTemplate()
 
       if (!pdfBytes || pdfBytes.length === 0) {
         throw new Error("Generated PDF is empty")

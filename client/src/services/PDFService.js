@@ -69,6 +69,29 @@ class PDFService {
     }
   }
 
+  static async downloadPDFTemplateByName(name = "jazaer") {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8090/api/collections/pdf_templates/records?filter=(name='${name}')`
+      )
+      if (!response.ok) {
+        throw new Error(`Failed to fetch PDF template: ${response.status}`)
+      }
+
+      const data = await response.json()
+      if (!data.items || data.items.length === 0) {
+        throw new Error(`PDF template with name '${name}' not found`)
+      }
+
+      const template = data.items[0]
+      const fileUrl = `http://127.0.0.1:8090/api/files/${template.collectionId}/${template.id}/${template.file}`
+      return await this.fetchAndValidatePDF(fileUrl)
+    } catch (error) {
+      console.error("Error downloading PDF template:", error)
+      throw error
+    }
+  }
+
   static async fetchAndValidatePDF(url) {
     console.log("Fetching PDF from:", url)
 
@@ -104,14 +127,14 @@ class PDFService {
   }
 
   static async getTemplate(templatePath) {
-    const pdfBuffer = await this.fetchAndValidatePDF(templatePath)
+    const pdfBuffer = await this.downloadPDFTemplateByName(templatePath)
     const pdfDoc = await PDFDocument.load(pdfBuffer)
     return await pdfDoc.save()
   }
 
   static async fillTemplate(templatePath, data) {
     try {
-      const pdfBuffer = await this.fetchAndValidatePDF(templatePath)
+      const pdfBuffer = await this.downloadPDFTemplateByName()
       const pdfDoc = await PDFDocument.load(pdfBuffer)
       pdfDoc.registerFontkit(fontkit)
       const page = pdfDoc.getPages()[0]

@@ -18,7 +18,7 @@ import PDFService from "../services/PDFService"
 import SettingsModal from "./SettingsModal"
 import TextEditor from "./TextEditor"
 
-const DataSelectionPage = ({ category, templatePath }) => {
+const DataSelectionPage = ({ category, templatePath = "jazaer" }) => {
   const [findings, setFindings] = useState([])
   const [error, setError] = useState(null)
   const [editingIndex, setEditingIndex] = useState(null)

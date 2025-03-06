@@ -1,5 +1,5 @@
 export const PDF_TEMPLATE_PATH =
-  "http://localhost:5002/api/templates/file/template.pdf"
+  "http://127.0.0.1:8090/api/collections/pdf_templates/records?filter(name=jazaer)"
 
 export const PDF_COORDINATES = {
   date: {

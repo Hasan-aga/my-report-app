@@ -31,3 +31,6 @@ yarn-error.log*
 ._*
 .Spotlight-V100
 .Trashes
+
+# ignore pocketbase data
+pb_data/
