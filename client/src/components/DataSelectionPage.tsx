@@ -1,6 +1,8 @@
 import {
   closestCenter,
   DndContext,
+  DragEndEvent,
+  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -34,11 +36,30 @@ import {
   TextField,
   Typography
 } from "@mui/material"
-import { useEffect, useState } from "react"
+import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
 import PDFService from "../services/PDFService"
 import SettingsModal from "./SettingsModal"
 import TextEditor from "./TextEditor"
+
+interface Finding {
+  text: string
+  id: string
+}
+
+interface CategoryData {
+  name: string
+  findings: string[]
+}
+
+interface ReportData {
+  [key: string]: CategoryData
+}
+
+interface DataSelectionPageProps {
+  category: string
+  templatePath: string
+}
 
 // A component to render the Draggable item
 const SortableItem = ({
@@ -47,6 +68,12 @@ const SortableItem = ({
   handleFindingChange,
   handleRemoveFinding,
   handleEditFinding
+}: {
+  finding: Finding
+  index: number
+  handleFindingChange: (index: number, newText: string) => void
+  handleRemoveFinding: (index: number) => void
+  handleEditFinding: (index: number) => void
 }) => {
   const {
     attributes,
@@ -63,8 +90,9 @@ const SortableItem = ({
     opacity: isDragging ? 0.5 : 1,
     cursor: "grab"
   }
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && e.target.value === "") {
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Backspace" && e.currentTarget.value === "") {
       e.preventDefault()
       handleRemoveFinding(index)
     }
@@ -119,16 +147,19 @@ const SortableItem = ({
   )
 }
 
-const DataSelectionPage = ({ category, templatePath }) => {
-  const [findings, setFindings] = useState([])
-  const [error, setError] = useState(null)
-  const [editingIndex, setEditingIndex] = useState(null)
-  const [showEditor, setShowEditor] = useState(false)
-  const [openSettings, setOpenSettings] = useState(false)
-  const [patientName, setPatientName] = useState("")
-  const [activeId, setActiveId] = useState(null)
+const DataSelectionPage = ({
+  category,
+  templatePath
+}: DataSelectionPageProps) => {
+  const [findings, setFindings] = useState<Finding[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [showEditor, setShowEditor] = useState<boolean>(false)
+  const [openSettings, setOpenSettings] = useState<boolean>(false)
+  const [patientName, setPatientName] = useState<string>("")
+  const [activeId, setActiveId] = useState<string | null>(null)
 
-  const categoryData = REPORT_DATA[category]
+  const categoryData = (REPORT_DATA as ReportData)[category]
 
   // Initialize findings from category data
   useEffect(() => {
@@ -140,9 +171,9 @@ const DataSelectionPage = ({ category, templatePath }) => {
         }))
       )
     }
-  }, [category])
+  }, [category, categoryData])
 
-  const handleFindingChange = (index, newText) => {
+  const handleFindingChange = (index: number, newText: string) => {
     setFindings((prev) => {
       const updated = [...prev]
       updated[index] = { ...updated[index], text: newText }
@@ -154,17 +185,17 @@ const DataSelectionPage = ({ category, templatePath }) => {
     setFindings((prev) => [...prev, { text: "", id: crypto.randomUUID() }])
   }
 
-  const handleRemoveFinding = (index) => {
+  const handleRemoveFinding = (index: number) => {
     setFindings((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleEditFinding = (index) => {
+  const handleEditFinding = (index: number) => {
     setEditingIndex(index)
     setShowEditor(true)
   }
 
-  const handleEditorSave = (newText) => {
-    handleFindingChange(editingIndex, newText)
+  const handleEditorSave = (newText: string) => {
+    handleFindingChange(editingIndex!, newText)
     setShowEditor(false)
     setEditingIndex(null)
   }
@@ -197,7 +228,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
       }
 
       await PDFService.printPDF(pdfBytes)
-    } catch (error) {
+    } catch (error: any) {
       console.error("Print error:", error)
       setError(error.message)
     }
@@ -223,7 +254,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
       link.click()
       document.body.removeChild(link)
       URL.revokeObjectURL(url)
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error:", error)
       setError(error.message)
     }
@@ -233,7 +264,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
     useSensor(KeyboardSensor)
   )
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
     if (over && active.id !== over.id) {
@@ -247,15 +278,15 @@ const DataSelectionPage = ({ category, templatePath }) => {
     setActiveId(null)
   }
 
-  const handleDragStart = (event) => {
+  const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
     setActiveId(active.id)
   }
-  const arrayMove = (arr, oldIndex, newIndex) => {
+  const arrayMove = (arr: Finding[], oldIndex: number, newIndex: number) => {
     if (newIndex >= arr.length) {
       let k = newIndex - arr.length + 1
       while (k--) {
-        arr.push(undefined)
+        arr.push(undefined as any)
       }
     }
     arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0])
@@ -320,7 +351,9 @@ const DataSelectionPage = ({ category, templatePath }) => {
             variant="outlined"
             size="small"
             value={patientName}
-            onChange={(e) => setPatientName(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setPatientName(e.target.value)
+            }
             inputProps={{
               "aria-label": "Patient Name",
               "aria-describedby": "patient-name-description"
