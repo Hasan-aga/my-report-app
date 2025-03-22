@@ -1,4 +1,25 @@
-import { Add, Clear, Download, Edit, Print } from "@mui/icons-material"
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import {
+  Add,
+  Clear,
+  Download,
+  DragHandle,
+  Edit,
+  Print
+} from "@mui/icons-material"
 import {
   Alert,
   Box,
@@ -6,6 +27,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Paper,
   Snackbar,
@@ -18,6 +40,85 @@ import PDFService from "../services/PDFService"
 import SettingsModal from "./SettingsModal"
 import TextEditor from "./TextEditor"
 
+// A component to render the Draggable item
+const SortableItem = ({
+  finding,
+  index,
+  handleFindingChange,
+  handleRemoveFinding,
+  handleEditFinding
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: finding.id })
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: "grab"
+  }
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && e.target.value === "") {
+      e.preventDefault()
+      handleRemoveFinding(index)
+    }
+  }
+
+  return (
+    <ListItem
+      ref={setNodeRef}
+      style={style}
+      sx={{
+        px: 2,
+        py: 1,
+        "&:hover": {
+          bgcolor: "action.hover"
+        }
+      }}
+    >
+      <ListItemButton
+        {...listeners}
+        {...attributes}
+        sx={{ cursor: "grab", width: "30px" }}
+      >
+        <DragHandle fontSize="small" />
+      </ListItemButton>
+      <ListItemText
+        primary={
+          <TextField
+            fullWidth
+            variant="standard"
+            value={finding.text}
+            onChange={(e) => handleFindingChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            autoFocus={index === 0 && finding.text === ""} // Only autoFocus first item when it is empty
+          />
+        }
+      />
+      <IconButton
+        size="small"
+        onClick={() => handleRemoveFinding(index)}
+        sx={{ ml: 1 }}
+      >
+        <Clear fontSize="small" />
+      </IconButton>
+      <IconButton
+        size="small"
+        onClick={() => handleEditFinding(index)}
+        sx={{ ml: 1 }}
+      >
+        <Edit fontSize="small" />
+      </IconButton>
+    </ListItem>
+  )
+}
+
 const DataSelectionPage = ({ category, templatePath }) => {
   const [findings, setFindings] = useState([])
   const [error, setError] = useState(null)
@@ -25,13 +126,19 @@ const DataSelectionPage = ({ category, templatePath }) => {
   const [showEditor, setShowEditor] = useState(false)
   const [openSettings, setOpenSettings] = useState(false)
   const [patientName, setPatientName] = useState("")
+  const [activeId, setActiveId] = useState(null)
 
   const categoryData = REPORT_DATA[category]
 
   // Initialize findings from category data
   useEffect(() => {
     if (categoryData?.findings) {
-      setFindings(categoryData.findings.map((finding) => ({ text: finding })))
+      setFindings(
+        categoryData.findings.map((finding) => ({
+          text: finding,
+          id: crypto.randomUUID()
+        }))
+      )
     }
   }, [category])
 
@@ -44,7 +151,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
   }
 
   const handleAddNewFinding = () => {
-    setFindings((prev) => [...prev, { text: "" }])
+    setFindings((prev) => [...prev, { text: "", id: crypto.randomUUID() }])
   }
 
   const handleRemoveFinding = (index) => {
@@ -65,13 +172,6 @@ const DataSelectionPage = ({ category, templatePath }) => {
   const handleEditorCancel = () => {
     setShowEditor(false)
     setEditingIndex(null)
-  }
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && e.target.value === "") {
-      e.preventDefault()
-      handleRemoveFinding(index)
-    }
   }
 
   const handlePrint = async () => {
@@ -127,6 +227,39 @@ const DataSelectionPage = ({ category, templatePath }) => {
       console.error("Save error:", error)
       setError(error.message)
     }
+  }
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor)
+  )
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      setFindings((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id)
+        const newIndex = items.findIndex((item) => item.id === over.id)
+
+        return arrayMove(items, oldIndex, newIndex)
+      })
+    }
+    setActiveId(null)
+  }
+
+  const handleDragStart = (event) => {
+    const { active } = event
+    setActiveId(active.id)
+  }
+  const arrayMove = (arr, oldIndex, newIndex) => {
+    if (newIndex >= arr.length) {
+      let k = newIndex - arr.length + 1
+      while (k--) {
+        arr.push(undefined)
+      }
+    }
+    arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0])
+    return arr
   }
 
   if (!category) {
@@ -210,51 +343,30 @@ const DataSelectionPage = ({ category, templatePath }) => {
             overflow: "hidden"
           }}
         >
-          <List sx={{ width: "100%", overflow: "auto" }}>
-            {findings.map((finding, index) => (
-              <ListItem
-                key={index}
-                sx={{
-                  px: 2,
-                  py: 1,
-                  "&:hover": {
-                    bgcolor: "action.hover"
-                  }
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <TextField
-                      fullWidth
-                      variant="standard"
-                      value={finding.text}
-                      onChange={(e) =>
-                        handleFindingChange(index, e.target.value)
-                      }
-                      onKeyDown={(e) => handleKeyDown(e, index)}
-                      autoFocus={
-                        index === findings.length - 1 && finding.text === ""
-                      }
-                    />
-                  }
-                />
-                <IconButton
-                  size="small"
-                  onClick={() => handleRemoveFinding(index)}
-                  sx={{ ml: 1 }}
-                >
-                  <Clear fontSize="small" />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  onClick={() => handleEditFinding(index)}
-                  sx={{ ml: 1 }}
-                >
-                  <Edit fontSize="small" />
-                </IconButton>
-              </ListItem>
-            ))}
-          </List>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+            onDragStart={handleDragStart}
+          >
+            <SortableContext
+              items={findings.map((finding) => finding.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <List sx={{ width: "100%", overflow: "auto" }}>
+                {findings.map((finding, index) => (
+                  <SortableItem
+                    key={finding.id}
+                    finding={finding}
+                    index={index}
+                    handleFindingChange={handleFindingChange}
+                    handleRemoveFinding={handleRemoveFinding}
+                    handleEditFinding={handleEditFinding}
+                  />
+                ))}
+              </List>
+            </SortableContext>
+          </DndContext>
 
           <Button
             onClick={handleAddNewFinding}
