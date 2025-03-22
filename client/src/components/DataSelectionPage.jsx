@@ -85,7 +85,7 @@ const SortableItem = ({
       <ListItemButton
         {...listeners}
         {...attributes}
-        sx={{ cursor: "grab", width: "30px" }}
+        sx={{ cursor: "grab", flexGrow: 0 }}
       >
         <DragHandle fontSize="small" />
       </ListItemButton>
