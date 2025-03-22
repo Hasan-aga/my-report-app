@@ -340,7 +340,9 @@ const DataSelectionPage = ({ category, templatePath }) => {
             border: 1,
             borderColor: "divider",
             borderRadius: 1,
-            overflow: "hidden"
+            overflow: "hidden",
+            height: "calc(100vh - 280px)", // Adjust the value based on your needs.
+            overflowY: "auto"
           }}
         >
           <DndContext
@@ -353,7 +355,7 @@ const DataSelectionPage = ({ category, templatePath }) => {
               items={findings.map((finding) => finding.id)}
               strategy={verticalListSortingStrategy}
             >
-              <List sx={{ width: "100%", overflow: "auto" }}>
+              <List sx={{ width: "100%" }}>
                 {findings.map((finding, index) => (
                   <SortableItem
                     key={finding.id}
