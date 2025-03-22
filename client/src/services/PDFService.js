@@ -145,7 +145,7 @@ class PDFService {
           patientName,
           FONT_SIZES.content
         )
-        const adjustedX = PDF_COORDINATES.patient.x - 2 * textWidth
+        const adjustedX = PDF_COORDINATES.patient.x - 1.5 * textWidth
 
         page.drawText(patientName, {
           x: adjustedX,
