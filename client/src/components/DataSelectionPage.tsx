@@ -40,6 +40,7 @@ import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
 import PDFService from "../services/PDFService"
 import SettingsModal from "./SettingsModal"
+import SpeechToTextButton from "./SpeechToTextButton"
 import TextEditor from "./TextEditor"
 
 interface Finding {
@@ -67,7 +68,9 @@ const SortableItem = ({
   index,
   handleFindingChange,
   handleRemoveFinding,
-  handleEditFinding
+  handleEditFinding,
+  handleEditorCancel,
+  handleEditorSave
 }: {
   finding: Finding
   index: number
@@ -143,6 +146,9 @@ const SortableItem = ({
       >
         <Edit fontSize="small" />
       </IconButton>
+      <SpeechToTextButton
+        onTranscript={(text) => handleFindingChange(index, text)}
+      />
     </ListItem>
   )
 }
@@ -395,8 +401,6 @@ const DataSelectionPage = ({
                     finding={finding}
                     index={index}
                     handleFindingChange={handleFindingChange}
-                    handleRemoveFinding={handleRemoveFinding}
-                    handleEditFinding={handleEditFinding}
                   />
                 ))}
               </List>

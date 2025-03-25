@@ -8,6 +8,7 @@ import "./assets/fonts/fonts.css"
 import ReportGeneratorPage from "./components/ReportGeneratorPage" // Keep this import
 import SettingsModal from "./components/SettingsModal"
 import { darkTheme, lightTheme } from "./themes"
+import ErrorBoundary from "./components/ErrorBoundary"
 
 function App() {
   const { fontSize } = useSettings() // Get fontSize from context
@@ -29,41 +30,43 @@ function App() {
   )
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          width: "100vw",
-          height: "100vh",
-          margin: 0,
-          padding: 0,
-          backgroundColor: "background.default"
-        }}
-      >
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
         <Box
           sx={{
-            position: "absolute",
-            top: 16,
-            right: 16,
-            display: "flex",
-            gap: 1
+            width: "100vw",
+            height: "100vh",
+            margin: 0,
+            padding: 0,
+            backgroundColor: "background.default"
           }}
         >
-          <IconButton
-            onClick={() => setOpenSettings(true)} // Open settings modal
-            color={theme.palette.text.primary}
+          <Box
+            sx={{
+              position: "absolute",
+              top: 16,
+              right: 16,
+              display: "flex",
+              gap: 1
+            }}
           >
-            <Settings />
-          </IconButton>
+            <IconButton
+              onClick={() => setOpenSettings(true)} // Open settings modal
+              color={theme.palette.text.primary}
+            >
+              <Settings />
+            </IconButton>
+          </Box>
+          <SettingsModal
+            currentTheme={mode}
+            setTheme={setMode}
+            open={openSettings}
+            onClose={() => setOpenSettings(false)}
+          />
+          <ReportGeneratorPage />
         </Box>
-        <SettingsModal
-          currentTheme={mode}
-          setTheme={setMode}
-          open={openSettings}
-          onClose={() => setOpenSettings(false)}
-        />
-        <ReportGeneratorPage />
-      </Box>
-    </ThemeProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   )
 }
 

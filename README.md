@@ -55,3 +55,7 @@ The app gets a pdf template from its backend and fills that template with data. 
    npm run dev
    ```
    Client will run on http://localhost:5001
+
+## todo
+
+create self contained text editor and use it with speech rec
