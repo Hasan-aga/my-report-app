@@ -149,7 +149,9 @@ const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
     }
   }
 
-  return (
+  return error ? (
+    <></>
+  ) : (
     <Tooltip
       title={error || (isListening ? "Stop recording" : "Start recording")}
       placement="top"
