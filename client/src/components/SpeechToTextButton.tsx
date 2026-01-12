@@ -5,44 +5,21 @@ import React, { useEffect, useRef, useState } from "react"
 // Extended type declarations for Web Speech API
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition
-    webkitSpeechRecognition: typeof SpeechRecognition
+    SpeechRecognition: any
+    webkitSpeechRecognition: any
   }
 }
 
-interface SpeechRecognition extends EventTarget {
-  new (): SpeechRecognition
-  continuous: boolean
-  interimResults: boolean
-  lang: string
-  start: () => void
-  stop: () => void
-  abort: () => void
-  onstart: (() => void) | null
-  onend: (() => void) | null
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
-  onresult: ((event: SpeechRecognitionEvent) => void) | null
-}
-
+// Simple interfaces for events if needed, or just use any in the implementation
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList
   resultIndex: number
 }
 
 interface SpeechRecognitionErrorEvent extends Event {
-  error: SpeechRecognitionErrorCode
+  error: string
   message: string
 }
-
-type SpeechRecognitionErrorCode =
-  | "no-speech"
-  | "aborted"
-  | "audio-capture"
-  | "network"
-  | "not-allowed"
-  | "service-not-allowed"
-  | "bad-grammar"
-  | "language-not-supported"
 
 interface SpeechToTextButtonProps {
   onTranscript: (text: string) => void
@@ -54,7 +31,13 @@ const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
   const [isListening, setIsListening] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [isSupported, setIsSupported] = useState<boolean>(false)
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<any>(null)
+
+  const onTranscriptRef = useRef(onTranscript)
+
+  useEffect(() => {
+    onTranscriptRef.current = onTranscript
+  }, [onTranscript])
 
   // Initialize speech recognition
   useEffect(() => {
@@ -81,33 +64,34 @@ const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
         const SpeechRecognition =
           window.SpeechRecognition || window.webkitSpeechRecognition
         recognitionRef.current = new SpeechRecognition()
-        recognitionRef.current.continuous = true
-        recognitionRef.current.interimResults = true
-        recognitionRef.current.lang = "en-US"
 
-        recognitionRef.current.onstart = () => setIsListening(true)
-        recognitionRef.current.onend = () => setIsListening(false)
+        if (recognitionRef.current) {
+          recognitionRef.current.continuous = true
+          recognitionRef.current.interimResults = true
+          recognitionRef.current.lang = "en-US"
 
-        recognitionRef.current.onerror = (event) => {
-          console.error("Speech recognition error:", event.error)
-          setIsListening(false)
-          if (event.error !== "aborted") {
-            setError(`Error: ${event.error}`)
-          }
-        }
+          recognitionRef.current.onstart = () => setIsListening(true)
+          recognitionRef.current.onend = () => setIsListening(false)
 
-        recognitionRef.current.onresult = (event) => {
-          let transcript = ""
-
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            console.log(i)
-
-            if (event.results[i].isFinal) {
-              transcript += event.results[i][0].transcript
+          recognitionRef.current.onerror = (event: any) => {
+            console.error("Speech recognition error:", event.error)
+            setIsListening(false)
+            if (event.error !== "aborted") {
+              setError(`Error: ${event.error}`)
             }
           }
-          if (transcript) {
-            onTranscript(transcript)
+
+          recognitionRef.current.onresult = (event: any) => {
+            let transcript = ""
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              if (event.results[i].isFinal) {
+                transcript += event.results[i][0].transcript
+              }
+            }
+            if (transcript) {
+              onTranscriptRef.current(transcript)
+            }
           }
         }
       } catch (err) {
@@ -123,9 +107,13 @@ const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
         recognitionRef.current.stop()
       }
     }
-  }, [onTranscript])
+  }, [])
 
   const handleSpeechToText = () => {
+    if (error) {
+      setError(null)
+    }
+
     if (!isSupported) {
       setError("Feature not supported in your browser")
       return
@@ -149,37 +137,36 @@ const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
     }
   }
 
-  return error ? (
-    <></>
-  ) : (
+  return (
     <Tooltip
       title={error || (isListening ? "Stop recording" : "Start recording")}
       placement="top"
     >
-      <div>
-        <IconButton
-          size="small"
-          onClick={handleSpeechToText}
-          color={isListening ? "error" : "primary"}
-          sx={{
-            borderRadius: "50%",
-            p: 1.5,
-            transition: "all 0.3s ease",
-            ...(isListening && {
-              animation: "pulse 1.5s infinite",
-              "@keyframes pulse": {
-                "0%": { boxShadow: "0 0 0 0 rgba(244, 67, 54, 0.7)" },
-                "70%": { boxShadow: "0 0 0 10px rgba(244, 67, 54, 0)" },
-                "100%": { boxShadow: "0 0 0 0 rgba(244, 67, 54, 0)" }
-              }
-            })
-          }}
-          disabled={!!error || !isSupported}
-          aria-label={isListening ? "Stop recording" : "Start recording"}
-        >
-          <MicIcon fontSize="medium" />
-        </IconButton>
-      </div>
+      <IconButton
+        size="small"
+        onClick={handleSpeechToText}
+        color={isListening ? "error" : "primary"}
+        sx={{
+          borderRadius: "50%",
+          p: 1.5,
+          transition: "all 0.3s ease",
+          ...(isListening && {
+            animation: "pulse 1.5s infinite",
+            "@keyframes pulse": {
+              "0%": { boxShadow: "0 0 0 0 rgba(244, 67, 54, 0.7)" },
+              "70%": { boxShadow: "0 0 0 10px rgba(244, 67, 54, 0)" },
+              "100%": { boxShadow: "0 0 0 0 rgba(244, 67, 54, 0)" }
+            }
+          }),
+          ...(error && {
+            color: "warning.main"
+          })
+        }}
+        disabled={!isSupported}
+        aria-label={isListening ? "Stop recording" : "Start recording"}
+      >
+        <MicIcon fontSize="medium" />
+      </IconButton>
     </Tooltip>
   )
 }

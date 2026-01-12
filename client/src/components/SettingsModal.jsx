@@ -5,6 +5,7 @@ import {
   Modal,
   Slider,
   Stack,
+  Switch,
   ToggleButton,
   ToggleButtonGroup,
   Typography
@@ -13,7 +14,8 @@ import React from "react"
 import { useSettings } from "../../hooks/useSettings"
 
 const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
-  const { fontSize, setFontSize } = useSettings()
+  const { fontSize, setFontSize, showAdvancedRecording, setShowAdvancedRecording } =
+    useSettings()
 
   const handleFontSizeChange = (event, value) => {
     setFontSize(value)
@@ -131,6 +133,28 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           <Typography variant="caption" color="text.secondary">
             {commitMessage}
           </Typography>
+        </Stack>
+
+        <Typography variant="h6" color="text.secondary" mt={2}>
+          Advanced
+        </Typography>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems="center"
+          mt={1}
+        >
+          <Typography color="text.primary">Enable Voice Recording</Typography>
+          <Switch
+            checked={showAdvancedRecording}
+            onChange={(e) => {
+              setShowAdvancedRecording(e.target.checked)
+              localStorage.setItem(
+                "showAdvancedRecording",
+                JSON.stringify(e.target.checked)
+              )
+            }}
+          />
         </Stack>
       </Box>
     </Modal>

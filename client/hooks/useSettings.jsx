@@ -9,8 +9,20 @@ export const SettingsProvider = ({ children }) => {
     return savedFontSize ? JSON.parse(savedFontSize) : UI_FONT_SIZE
   }) // Get font size from local storage or use default
 
+  const [showAdvancedRecording, setShowAdvancedRecording] = useState(() => {
+    const saved = localStorage.getItem("showAdvancedRecording")
+    return saved ? JSON.parse(saved) : false
+  })
+
   return (
-    <SettingsContext.Provider value={{ fontSize, setFontSize }}>
+    <SettingsContext.Provider
+      value={{
+        fontSize,
+        setFontSize,
+        showAdvancedRecording,
+        setShowAdvancedRecording
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   )

@@ -42,6 +42,7 @@ import PDFService from "../services/PDFService"
 import SettingsModal from "./SettingsModal"
 import SpeechToTextButton from "./SpeechToTextButton"
 import TextEditor from "./TextEditor"
+import { useSettings } from "../../hooks/useSettings"
 
 interface Finding {
   text: string
@@ -76,6 +77,7 @@ const SortableItem = ({
   handleRemoveFinding: (index: number) => void
   handleEditFinding: (index: number) => void
 }) => {
+  const { showAdvancedRecording } = useSettings() as any
   const {
     attributes,
     listeners,
@@ -144,9 +146,11 @@ const SortableItem = ({
       >
         <Edit fontSize="small" />
       </IconButton>
-      <SpeechToTextButton
-        onTranscript={(text) => handleFindingChange(index, text)}
-      />
+      {showAdvancedRecording && (
+        <SpeechToTextButton
+          onTranscript={(text) => handleFindingChange(index, text)}
+        />
+      )}
     </ListItem>
   )
 }
