@@ -311,20 +311,39 @@ class PDFService {
       const blob = new Blob([pdfBytes], { type: "application/pdf" })
       const url = URL.createObjectURL(blob)
 
-      const printWindow = window.open(
-        url,
-        "_blank",
-        "width=800,height=600,menubar=no,toolbar=no,location=no,status=no"
-      )
-
-      if (!printWindow) {
-        throw new Error("Pop-up blocked. Please allow pop-ups for PDF preview.")
+      // Cleanup existing iframe if any
+      const existingIframe = document.getElementById("print-iframe")
+      if (existingIframe) {
+        document.body.removeChild(existingIframe)
+        // Revoke the old Object URL to avoid memory leaks
+        if (existingIframe.dataset.objectUrl) {
+          URL.revokeObjectURL(existingIframe.dataset.objectUrl)
+        }
       }
 
-      printWindow.onload = () => {
-        printWindow.onunload = () => {
-          URL.revokeObjectURL(url)
+      // Create an invisible iframe
+      const iframe = document.createElement("iframe")
+      iframe.id = "print-iframe"
+      iframe.dataset.objectUrl = url // Store URL for cleanup
+      iframe.style.position = "fixed"
+      iframe.style.width = "0"
+      iframe.style.height = "0"
+      iframe.style.border = "none"
+      iframe.src = url
+
+      // Add iframe to body
+      document.body.appendChild(iframe)
+
+      // Wait for the iframe to load
+      iframe.onload = () => {
+        try {
+          iframe.contentWindow.focus()
+          iframe.contentWindow.print()
+        } catch (e) {
+          console.error("Print error:", e)
         }
+        // No auto-cleanup here to prevent dialog from closing.
+        // The iframe will be cleaned up on the next print call.
       }
     } catch (error) {
       console.error("Error printing PDF:", error)
