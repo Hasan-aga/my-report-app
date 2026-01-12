@@ -2,12 +2,7 @@ version: "3.8"
 
 services:
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-      args:
-        - COMMIT_SHA=${COMMIT_SHA:-unknown}
-        - COMMIT_MESSAGE=${COMMIT_MESSAGE:-unknown}
+    image: ghcr.io/hasan-aga/my-report-app-client:latest
     ports:
       - "80:80"
     environment:
@@ -17,9 +12,7 @@ services:
     restart: always
 
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: ghcr.io/hasan-aga/my-report-app-server:latest
     ports:
       - "5002:5002"
     volumes:
@@ -29,5 +22,11 @@ services:
       - NODE_ENV=production
     restart: always
 
-volumes:
-  templates:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=300 # Check every 5 minutes
+      - WATCHTOWER_CLEANUP=true
+    restart: always
