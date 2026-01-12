@@ -68,9 +68,7 @@ const SortableItem = ({
   index,
   handleFindingChange,
   handleRemoveFinding,
-  handleEditFinding,
-  handleEditorCancel,
-  handleEditorSave
+  handleEditFinding
 }: {
   finding: Finding
   index: number
@@ -401,6 +399,8 @@ const DataSelectionPage = ({
                     finding={finding}
                     index={index}
                     handleFindingChange={handleFindingChange}
+                    handleRemoveFinding={handleRemoveFinding}
+                    handleEditFinding={handleEditFinding}
                   />
                 ))}
               </List>
