@@ -455,15 +455,24 @@ const DataSelectionPage = ({
               <Download />
             </IconButton>
           )}
-          <IconButton
+          <Button
+            variant="contained"
             color="primary"
             onClick={handlePrint}
             disabled={findings.length === 0}
-            aria-label="Print Report"
-            title="Print the report"
+            startIcon={<Print />}
+            sx={{
+              border: "2px solid black",
+              fontWeight: "bold",
+              padding: "10px 20px",
+              fontSize: "1.1rem",
+              "&:hover": {
+                border: "2px solid black" // Keep border on hover
+              }
+            }}
           >
-            <Print />
-          </IconButton>
+            Print
+          </Button>
         </Box>
       </Box>
 
