@@ -18,7 +18,9 @@ import PDFService from "../services/PDFService"
 import DataSelectionPage from "./DataSelectionPage"
 
 const ReportGeneratorPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState(
+    Object.keys(REPORT_DATA)[0] || ""
+  )
   const theme = useTheme()
 
   const handlePrint = async () => {
