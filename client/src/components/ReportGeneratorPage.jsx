@@ -56,8 +56,9 @@ const ReportGeneratorPage = () => {
                   component="legend"
                   sx={{
                     fontSize: "1.2rem",
+                    fontWeight: "bold",
                     mb: 2,
-                    color: theme.palette.primary.contrastText
+                    color: "primary.main"
                   }}
                 >
                   Report Categories
@@ -65,35 +66,46 @@ const ReportGeneratorPage = () => {
                 <RadioGroup
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
+                  sx={{ width: "100%", gap: 1 }}
                 >
-                  {Object.entries(REPORT_DATA).map(([key, category]) => (
-                    <FormControlLabel
-                      key={key}
-                      value={key}
-                      control={
-                        <Radio
-                          sx={{
-                            color: theme.palette.secondary.main,
-                            "&.Mui-checked": {
-                              color: theme.palette.secondary.main
-                            }
-                          }}
-                        />
-                      }
-                      label={
-                        <Typography variant="subtitle1">
-                          {category.name}
-                        </Typography>
-                      }
-                      sx={{
-                        mb: 2,
-                        "&:hover": {
-                          backgroundColor: "action.hover",
-                          borderRadius: 1
+                  {Object.entries(REPORT_DATA).map(([key, category]) => {
+                    const isSelected = selectedCategory === key
+                    return (
+                      <FormControlLabel
+                        key={key}
+                        value={key}
+                        control={<Radio sx={{ display: "none" }} />}
+                        label={
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              fontWeight: isSelected ? "bold" : "medium",
+                              color: isSelected ? "primary.contrastText" : "text.primary",
+                              width: "100%"
+                            }}
+                          >
+                            {category.name}
+                          </Typography>
                         }
-                      }}
-                    />
-                  ))}
+                        sx={{
+                          m: 0,
+                          px: 2,
+                          py: 1.5,
+                          width: "100%",
+                          borderRadius: 1,
+                          backgroundColor: isSelected ? "primary.main" : "transparent",
+                          border: isSelected ? "1px solid" : "1px solid transparent",
+                          borderColor: isSelected ? "primary.dark" : "transparent",
+                          "&:hover": {
+                            backgroundColor: isSelected ? "primary.dark" : "action.hover",
+                            transform: "translateX(4px)"
+                          },
+                          transition: "all 0.2s ease-in-out",
+                          cursor: "pointer"
+                        }}
+                      />
+                    )
+                  })}
                 </RadioGroup>
               </FormControl>
             </Paper>
