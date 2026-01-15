@@ -14,8 +14,14 @@ import React from "react"
 import { useSettings } from "../../hooks/useSettings"
 
 const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
-  const { fontSize, setFontSize, showAdvancedRecording, setShowAdvancedRecording } =
-    useSettings()
+  const {
+    fontSize,
+    setFontSize,
+    showAdvancedRecording,
+    setShowAdvancedRecording,
+    showSaveReport,
+    setShowSaveReport
+  } = useSettings()
 
   const handleFontSizeChange = (event, value) => {
     setFontSize(value)
@@ -151,6 +157,24 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
               setShowAdvancedRecording(e.target.checked)
               localStorage.setItem(
                 "showAdvancedRecording",
+                JSON.stringify(e.target.checked)
+              )
+            }}
+          />
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems="center"
+          mt={1}
+        >
+          <Typography color="text.primary">Enable Save Report</Typography>
+          <Switch
+            checked={showSaveReport}
+            onChange={(e) => {
+              setShowSaveReport(e.target.checked)
+              localStorage.setItem(
+                "showSaveReport",
                 JSON.stringify(e.target.checked)
               )
             }}

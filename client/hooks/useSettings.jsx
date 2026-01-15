@@ -14,13 +14,20 @@ export const SettingsProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : false
   })
 
+  const [showSaveReport, setShowSaveReport] = useState(() => {
+    const saved = localStorage.getItem("showSaveReport")
+    return saved ? JSON.parse(saved) : false
+  })
+
   return (
     <SettingsContext.Provider
       value={{
         fontSize,
         setFontSize,
         showAdvancedRecording,
-        setShowAdvancedRecording
+        setShowAdvancedRecording,
+        showSaveReport,
+        setShowSaveReport
       }}
     >
       {children}

@@ -77,7 +77,7 @@ const SortableItem = ({
   handleRemoveFinding: (index: number) => void
   handleEditFinding: (index: number) => void
 }) => {
-  const { showAdvancedRecording } = useSettings() as any
+  const { showAdvancedRecording, showSaveReport } = useSettings() as any
   const {
     attributes,
     listeners,
@@ -167,6 +167,7 @@ const DataSelectionPage = ({
   const [patientName, setPatientName] = useState<string>("")
   const [activeId, setActiveId] = useState<string | null>(null)
 
+  const { showSaveReport } = useSettings() as any
   const categoryData = (REPORT_DATA as ReportData)[category]
 
   // Initialize findings from category data
@@ -443,15 +444,17 @@ const DataSelectionPage = ({
             gap: 1
           }}
         >
-          <IconButton
-            color="secondary"
-            onClick={handleSave}
-            disabled={findings.length === 0}
-            aria-label="Save Report"
-            title="Save the report as a PDF"
-          >
-            <Download />
-          </IconButton>
+          {showSaveReport && (
+            <IconButton
+              color="secondary"
+              onClick={handleSave}
+              disabled={findings.length === 0}
+              aria-label="Save Report"
+              title="Save the report as a PDF"
+            >
+              <Download />
+            </IconButton>
+          )}
           <IconButton
             color="primary"
             onClick={handlePrint}
