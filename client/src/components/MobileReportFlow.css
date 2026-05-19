@@ -1,0 +1,346 @@
+.mobile-flow {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  position: relative;
+  background-color: inherit;
+}
+
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid;
+  flex-shrink: 0;
+}
+
+.mobile-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-header-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.mobile-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-card-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.mobile-card-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.mobile-card {
+  min-width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card 1: Category Selection */
+.category-select-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.category-select-content h2 {
+  font-size: 1.4rem;
+  margin: 8px 0 4px;
+}
+
+.category-select-content p {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin: 0 0 8px;
+}
+
+.mobile-category-card {
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 2px solid transparent;
+}
+
+.mobile-category-card:active {
+  transform: scale(0.97);
+}
+
+.mobile-category-card h3 {
+  font-size: 1.2rem;
+  margin: 0 0 6px;
+}
+
+.mobile-category-card p {
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* Card 2: Findings Editor */
+.findings-editor-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding-bottom: 16px;
+}
+
+.findings-editor-content h2 {
+  font-size: 1.3rem;
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+.findings-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.mobile-finding-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid;
+  position: relative;
+}
+
+.mobile-finding-item textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-family: inherit;
+  min-height: 40px;
+  outline: none;
+  padding: 2px 0;
+  width: 100%;
+}
+
+.mobile-finding-item textarea::placeholder {
+  opacity: 0.4;
+}
+
+.mobile-finding-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mobile-add-finding {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-add-finding:active {
+  opacity: 0.6;
+}
+
+/* Card 3: Review & Print */
+.review-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex: 1;
+  text-align: center;
+  padding: 20px;
+}
+
+.review-content h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.review-summary {
+  font-size: 0.95rem;
+  opacity: 0.7;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.review-findings-preview {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.review-findings-preview h4 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.review-findings-preview ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.review-findings-preview li {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.print-button-large {
+  width: 100%;
+  max-width: 280px;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.print-button-large:active {
+  transform: scale(0.97);
+}
+
+.print-button-large:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.home-button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home-button:active {
+  transform: scale(0.97);
+}
+
+/* Step indicators */
+.mobile-step-dots {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mobile-step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  opacity: 0.3;
+}
+
+.mobile-step-dot.active {
+  opacity: 1;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* Navigation arrows */
+.mobile-nav-arrows {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px 16px;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.mobile-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 90px;
+  justify-content: center;
+}
+
+.mobile-nav-btn:active {
+  opacity: 0.6;
+}
+
+.mobile-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Responsive tweaks for very small screens */
+@media (max-width: 360px) {
+  .mobile-card {
+    padding: 12px;
+  }
+  .mobile-category-card {
+    padding: 16px;
+  }
+  .mobile-category-card h3 {
+    font-size: 1.05rem;
+  }
+}
