@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import PDFService from '../services/PDFService';
-import ErrorNotification from './ErrorNotification';
-import './TemplateSelectionPage.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import PDFService from "../services/PDFService";
+import ErrorNotification from "./ErrorNotification";
+import "./TemplateSelectionPage.css";
 import {
   Container,
   Grid,
@@ -13,8 +13,8 @@ import {
   Box,
   AppBar,
   Toolbar,
-} from '@mui/material';
-import { REPORT_DATA } from '../constants/config';
+} from "@mui/material";
+import { REPORT_DATA } from "../constants/config";
 
 function TemplateSelectionPage() {
   const [templates, setTemplates] = useState([]);
@@ -27,7 +27,7 @@ function TemplateSelectionPage() {
   useEffect(() => {
     fetchTemplates();
     // Check for existing template selection
-    const savedTemplate = localStorage.getItem('selectedTemplate');
+    const savedTemplate = localStorage.getItem("selectedTemplate");
     if (savedTemplate) {
       setSelectedTemplate(JSON.parse(savedTemplate));
     }
@@ -44,9 +44,9 @@ function TemplateSelectionPage() {
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch('http://localhost:5002/api/templates');
+      const response = await fetch("/api/templates");
       if (!response.ok) {
-        throw new Error('Failed to fetch templates');
+        throw new Error("Failed to fetch templates");
       }
       const data = await response.json();
       setTemplates(data);
@@ -64,8 +64,11 @@ function TemplateSelectionPage() {
   const handleConfirm = () => {
     if (selectedTemplate) {
       // Store selected template in localStorage for persistence
-      localStorage.setItem('selectedTemplate', JSON.stringify(selectedTemplate));
-      navigate('/');  // Go back to category selection
+      localStorage.setItem(
+        "selectedTemplate",
+        JSON.stringify(selectedTemplate),
+      );
+      navigate("/"); // Go back to category selection
     }
   };
 
@@ -79,15 +82,17 @@ function TemplateSelectionPage() {
       event.stopPropagation(); // Prevent template selection when clicking preview
 
       const objectUrl = await PDFService.previewTemplate(template.path);
-      
+
       const newWindow = window.open(
         objectUrl,
-        'PDFPreview',
-        'width=800,height=600,menubar=no,toolbar=no,location=no,status=no'
+        "PDFPreview",
+        "width=800,height=600,menubar=no,toolbar=no,location=no,status=no",
       );
 
       if (!newWindow) {
-        throw new Error('Pop-up blocked. Please allow pop-ups for PDF preview.');
+        throw new Error(
+          "Pop-up blocked. Please allow pop-ups for PDF preview.",
+        );
       }
 
       setPreviewWindow(newWindow);
@@ -100,17 +105,17 @@ function TemplateSelectionPage() {
         };
       };
     } catch (error) {
-      console.error('Preview error:', error);
+      console.error("Preview error:", error);
       setError(`Error previewing PDF: ${error.message}`);
     }
   };
 
   const handleCategorySelect = (category) => {
-    navigate('/data-selection', {
+    navigate("/data-selection", {
       state: {
         category,
-        templatePath: REPORT_DATA[category].path
-      }
+        templatePath: REPORT_DATA[category].path,
+      },
     });
   };
 
@@ -139,20 +144,20 @@ function TemplateSelectionPage() {
         <Grid container spacing={3}>
           {Object.entries(REPORT_DATA).map(([key, category]) => (
             <Grid item xs={12} sm={6} md={4} key={key}>
-              <Card 
+              <Card
                 elevation={2}
                 sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
                     boxShadow: 4,
-                  }
+                  },
                 }}
               >
-                <CardActionArea 
+                <CardActionArea
                   onClick={() => handleCategorySelect(key)}
                   sx={{ flexGrow: 1 }}
                 >
@@ -174,4 +179,4 @@ function TemplateSelectionPage() {
   );
 }
 
-export default TemplateSelectionPage; 
+export default TemplateSelectionPage;

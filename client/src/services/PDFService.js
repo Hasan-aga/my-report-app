@@ -1,12 +1,12 @@
-import fontkit from "@pdf-lib/fontkit"
-import { PDFDocument, rgb } from "pdf-lib"
-import rubik from "../assets/fonts/Rubik.ttf"
+import fontkit from "@pdf-lib/fontkit";
+import { PDFDocument, rgb } from "pdf-lib";
+import rubik from "../assets/fonts/Rubik.ttf";
 import {
   FONT_SIZES,
   PDF_COORDINATES,
   SPACE,
-  TITLE_TEXT
-} from "../constants/config"
+  TITLE_TEXT,
+} from "../constants/config";
 
 // Helper function for date formatting
 const formatDate = (date) => {
@@ -15,150 +15,153 @@ const formatDate = (date) => {
       // en-CA gives yyyy/mm/dd format
       year: "numeric",
       month: "2-digit",
-      day: "2-digit"
+      day: "2-digit",
     })
-    .replace(/-/g, "/") // Replace hyphens with slashes
-}
+    .replace(/-/g, "/"); // Replace hyphens with slashes
+};
 
 // Helper function to wrap text
 const wrapText = (text, font, fontSize, startX, endX) => {
-  const words = text.split(" ")
-  const lines = []
-  let currentLine = words[0]
-  const maxWidth = endX - startX
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = words[0];
+  const maxWidth = endX - startX;
 
   for (let i = 1; i < words.length; i++) {
-    const width = font.widthOfTextAtSize(currentLine + " " + words[i], fontSize)
+    const width = font.widthOfTextAtSize(
+      currentLine + " " + words[i],
+      fontSize,
+    );
     if (width < maxWidth) {
-      currentLine += " " + words[i]
+      currentLine += " " + words[i];
     } else {
-      lines.push(currentLine)
-      currentLine = words[i]
+      lines.push(currentLine);
+      currentLine = words[i];
     }
   }
-  lines.push(currentLine)
-  return lines
-}
+  lines.push(currentLine);
+  return lines;
+};
 
 class PDFService {
   async loadTemplate(templatePath) {
-    const response = await fetch(templatePath)
-    const templateBytes = await response.arrayBuffer()
-    return await PDFDocument.load(templateBytes)
+    const response = await fetch(templatePath);
+    const templateBytes = await response.arrayBuffer();
+    return await PDFDocument.load(templateBytes);
   }
 
   async previewPDF(pdfBytes) {
-    const blob = new Blob([pdfBytes], { type: "application/pdf" })
-    return URL.createObjectURL(blob)
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    return URL.createObjectURL(blob);
   }
 
   async printPDF(pdfBytes) {
-    const blob = new Blob([pdfBytes], { type: "application/pdf" })
-    const url = URL.createObjectURL(blob)
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
 
     // Open in a popup window with specific dimensions
     const printWindow = window.open(
       url,
       "Print",
-      "width=800,height=600,toolbar=0,scrollbars=1,status=0"
-    )
+      "width=800,height=600,toolbar=0,scrollbars=1,status=0",
+    );
 
     printWindow.onload = () => {
-      printWindow.print()
-      URL.revokeObjectURL(url)
-    }
+      printWindow.print();
+      URL.revokeObjectURL(url);
+    };
   }
 
   static async fetchAndValidatePDF(url) {
-    console.log("Fetching PDF from:", url)
+    console.log("Fetching PDF from:", url);
 
     try {
-      const response = await fetch(url)
-      console.log("Response status:", response.status)
-      console.log("Response headers:", Object.fromEntries(response.headers))
+      const response = await fetch(url);
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers));
 
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error("Server response:", errorText)
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorText = await response.text();
+        console.error("Server response:", errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       // Verify content type
-      const contentType = response.headers.get("content-type")
+      const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/pdf")) {
-        throw new Error(`Invalid content type: ${contentType}`)
+        throw new Error(`Invalid content type: ${contentType}`);
       }
 
-      const pdfBuffer = await response.arrayBuffer()
-      console.log("PDF bytes received:", pdfBuffer.byteLength)
+      const pdfBuffer = await response.arrayBuffer();
+      console.log("PDF bytes received:", pdfBuffer.byteLength);
 
       if (pdfBuffer.byteLength === 0) {
-        throw new Error("Received empty PDF file")
+        throw new Error("Received empty PDF file");
       }
 
-      return pdfBuffer
+      return pdfBuffer;
     } catch (error) {
-      console.error("Error fetching PDF:", error)
-      throw error
+      console.error("Error fetching PDF:", error);
+      throw error;
     }
   }
 
   static async getTemplate(templatePath) {
-    const pdfBuffer = await this.fetchAndValidatePDF(templatePath)
-    const pdfDoc = await PDFDocument.load(pdfBuffer)
-    return await pdfDoc.save()
+    const pdfBuffer = await this.fetchAndValidatePDF(templatePath);
+    const pdfDoc = await PDFDocument.load(pdfBuffer);
+    return await pdfDoc.save();
   }
 
   static async fillTemplate(templatePath, data) {
     try {
-      const pdfBuffer = await this.fetchAndValidatePDF(templatePath)
-      const pdfDoc = await PDFDocument.load(pdfBuffer)
-      pdfDoc.registerFontkit(fontkit)
-      const page = pdfDoc.getPages()[0]
+      const pdfBuffer = await this.fetchAndValidatePDF(templatePath);
+      const pdfDoc = await PDFDocument.load(pdfBuffer);
+      pdfDoc.registerFontkit(fontkit);
+      const page = pdfDoc.getPages()[0];
       const fontBytes = await fetch(rubik)
         .then((res) => {
           if (!res.ok) {
-            throw new Error(`Failed to fetch font: ${res.statusText}`)
+            throw new Error(`Failed to fetch font: ${res.statusText}`);
           }
-          return res.arrayBuffer()
+          return res.arrayBuffer();
         })
         .catch((error) => {
-          console.error("Error fetching font:", error)
-          throw error
-        })
+          console.error("Error fetching font:", error);
+          throw error;
+        });
 
-      const font = await pdfDoc.embedFont(fontBytes)
-      const currentDate = new Date().toLocaleDateString("en-CA")
-      const formattedDate = currentDate.replace(/-/g, "/")
+      const font = await pdfDoc.embedFont(fontBytes);
+      const currentDate = new Date().toLocaleDateString("en-CA");
+      const formattedDate = currentDate.replace(/-/g, "/");
 
       page.drawText(formattedDate, {
         x: PDF_COORDINATES.date.x,
         y: PDF_COORDINATES.date.y,
         font,
-        size: 12
-      })
+        size: 12,
+      });
 
       // Draw patient name
       if (data[0]?.patientName) {
-        const patientName = data[0].patientName
+        const patientName = data[0].patientName;
         const textWidth = font.widthOfTextAtSize(
           patientName,
-          FONT_SIZES.content
-        )
-        const adjustedX = PDF_COORDINATES.patient.x - 1.5 * textWidth
+          FONT_SIZES.content,
+        );
+        const adjustedX = PDF_COORDINATES.patient.x - 1.5 * textWidth;
 
         page.drawText(patientName, {
           x: adjustedX,
           y: PDF_COORDINATES.patient.y,
           font,
-          size: FONT_SIZES.content
-        })
+          size: FONT_SIZES.content,
+        });
       }
 
-      const { width } = page.getSize()
-      const startX = PDF_COORDINATES.data.x
-      const endX = width - startX
-      let currentY = PDF_COORDINATES.data.y
+      const { width } = page.getSize();
+      const startX = PDF_COORDINATES.data.x;
+      const endX = width - startX;
+      let currentY = PDF_COORDINATES.data.y;
 
       // Draw category
       if (data[0]?.category) {
@@ -167,8 +170,8 @@ class PDFService {
           font,
           FONT_SIZES.title,
           startX,
-          endX
-        )
+          endX,
+        );
 
         categoryLines.forEach((line, index) => {
           page.drawText(line, {
@@ -176,20 +179,20 @@ class PDFService {
             y: currentY - index * SPACE,
             size: FONT_SIZES.title,
             font,
-            color: rgb(0, 0, 0)
-          })
-        })
-        currentY -= categoryLines.length * SPACE + SPACE
+            color: rgb(0, 0, 0),
+          });
+        });
+        currentY -= categoryLines.length * SPACE + SPACE;
       }
 
       // Draw findings
       if (data[0]?.findings) {
-        let currentPage = page
+        let currentPage = page;
 
         for (const finding of data[0].findings) {
           // Split finding into paragraphs by line breaks
-          const paragraphs = finding.split("\n")
-          let totalLines = []
+          const paragraphs = finding.split("\n");
+          let totalLines = [];
 
           // Wrap each paragraph separately
           paragraphs.forEach((paragraph) => {
@@ -198,20 +201,20 @@ class PDFService {
               font,
               FONT_SIZES.content,
               startX,
-              endX - 20
-            )
-            totalLines = [...totalLines, ...wrappedLines]
+              endX - 20,
+            );
+            totalLines = [...totalLines, ...wrappedLines];
             // Add an empty line between paragraphs if this isn't the last paragraph
             if (paragraph !== paragraphs[paragraphs.length - 1]) {
-              totalLines.push("")
+              totalLines.push("");
             }
-          })
+          });
 
           // Check if we need a new page
-          const requiredHeight = totalLines.length * SPACE + SPACE
+          const requiredHeight = totalLines.length * SPACE + SPACE;
           if (currentY - requiredHeight < SPACE * 2) {
-            currentPage = pdfDoc.addPage()
-            currentY = PDF_COORDINATES.data.y
+            currentPage = pdfDoc.addPage();
+            currentY = PDF_COORDINATES.data.y;
           }
 
           // Draw bullet point at the top of the finding
@@ -220,8 +223,8 @@ class PDFService {
             y: currentY,
             size: FONT_SIZES.content,
             font,
-            color: rgb(0, 0, 0)
-          })
+            color: rgb(0, 0, 0),
+          });
 
           // Draw all lines
           totalLines.forEach((line, index) => {
@@ -232,12 +235,12 @@ class PDFService {
                 y: currentY - index * SPACE,
                 size: FONT_SIZES.content,
                 font,
-                color: rgb(0, 0, 0)
-              })
+                color: rgb(0, 0, 0),
+              });
             }
-          })
+          });
 
-          currentY -= totalLines.length * SPACE + SPACE
+          currentY -= totalLines.length * SPACE + SPACE;
         }
 
         // Draw notes if they exist
@@ -247,12 +250,12 @@ class PDFService {
             font,
             FONT_SIZES.notes,
             startX,
-            endX
-          )
+            endX,
+          );
 
           if (currentY < SPACE * 3) {
-            currentPage = pdfDoc.addPage()
-            currentY = PDF_COORDINATES.data.y
+            currentPage = pdfDoc.addPage();
+            currentY = PDF_COORDINATES.data.y;
           }
 
           currentPage.drawText("Notes:", {
@@ -260,96 +263,96 @@ class PDFService {
             y: currentY,
             size: FONT_SIZES.content,
             font,
-            color: rgb(0, 0, 0)
-          })
-          currentY -= SPACE
+            color: rgb(0, 0, 0),
+          });
+          currentY -= SPACE;
 
           noteLines.forEach((line) => {
             if (currentY < SPACE) {
-              currentPage = pdfDoc.addPage()
-              currentY = PDF_COORDINATES.data.y
+              currentPage = pdfDoc.addPage();
+              currentY = PDF_COORDINATES.data.y;
             }
             currentPage.drawText(line, {
               x: startX,
               y: currentY,
               size: FONT_SIZES.notes,
               font,
-              color: rgb(0, 0, 0)
-            })
-            currentY -= SPACE
-          })
+              color: rgb(0, 0, 0),
+            });
+            currentY -= SPACE;
+          });
         }
       }
 
-      return await pdfDoc.save()
+      return await pdfDoc.save();
     } catch (error) {
-      console.error("Error in fillTemplate:", error)
-      throw error
+      console.error("Error in fillTemplate:", error);
+      throw error;
     }
   }
 
   static async previewTemplate(templatePath) {
     try {
-      const templateUrl = `http://localhost:5002/api/templates/file${templatePath}`
+      const templateUrl = `/api/templates/file${templatePath}`;
 
       // Fetch and validate PDF
-      const pdfBuffer = await this.fetchAndValidatePDF(templateUrl)
+      const pdfBuffer = await this.fetchAndValidatePDF(templateUrl);
 
       // Create blob and URL
-      const blob = new Blob([pdfBuffer], { type: "application/pdf" })
-      const objectUrl = URL.createObjectURL(blob)
+      const blob = new Blob([pdfBuffer], { type: "application/pdf" });
+      const objectUrl = URL.createObjectURL(blob);
 
-      return objectUrl
+      return objectUrl;
     } catch (error) {
-      console.error("Error in previewTemplate:", error)
-      throw error
+      console.error("Error in previewTemplate:", error);
+      throw error;
     }
   }
 
   static async printPDF(pdfBytes) {
     try {
-      const blob = new Blob([pdfBytes], { type: "application/pdf" })
-      const url = URL.createObjectURL(blob)
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
 
       // Cleanup existing iframe if any
-      const existingIframe = document.getElementById("print-iframe")
+      const existingIframe = document.getElementById("print-iframe");
       if (existingIframe) {
-        document.body.removeChild(existingIframe)
+        document.body.removeChild(existingIframe);
         // Revoke the old Object URL to avoid memory leaks
         if (existingIframe.dataset.objectUrl) {
-          URL.revokeObjectURL(existingIframe.dataset.objectUrl)
+          URL.revokeObjectURL(existingIframe.dataset.objectUrl);
         }
       }
 
       // Create an invisible iframe
-      const iframe = document.createElement("iframe")
-      iframe.id = "print-iframe"
-      iframe.dataset.objectUrl = url // Store URL for cleanup
-      iframe.style.position = "fixed"
-      iframe.style.width = "0"
-      iframe.style.height = "0"
-      iframe.style.border = "none"
-      iframe.src = url
+      const iframe = document.createElement("iframe");
+      iframe.id = "print-iframe";
+      iframe.dataset.objectUrl = url; // Store URL for cleanup
+      iframe.style.position = "fixed";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "none";
+      iframe.src = url;
 
       // Add iframe to body
-      document.body.appendChild(iframe)
+      document.body.appendChild(iframe);
 
       // Wait for the iframe to load
       iframe.onload = () => {
         try {
-          iframe.contentWindow.focus()
-          iframe.contentWindow.print()
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
         } catch (e) {
-          console.error("Print error:", e)
+          console.error("Print error:", e);
         }
         // No auto-cleanup here to prevent dialog from closing.
         // The iframe will be cleaned up on the next print call.
-      }
+      };
     } catch (error) {
-      console.error("Error printing PDF:", error)
-      throw error
+      console.error("Error printing PDF:", error);
+      throw error;
     }
   }
 }
 
-export default PDFService
+export default PDFService;
