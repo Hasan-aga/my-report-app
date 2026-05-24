@@ -33,7 +33,7 @@ const TOTAL_STEPS = 3;
 const MobileReportFlow = ({ onOpenSettings }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-  const { showCardFindings } = useSettings();
+  const { showCardFindings, easyNavigationButtons } = useSettings();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [currentFindingIndex, setCurrentFindingIndex] = useState(0);
@@ -42,6 +42,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
   const [findings, setFindings] = useState([]);
   const [error, setError] = useState(null);
   const [printing, setPrinting] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
 
   const categoryKeys = Object.keys(REPORT_DATA);
   const categoryData = REPORT_DATA[selectedCategory];
@@ -58,6 +59,16 @@ const MobileReportFlow = ({ onOpenSettings }) => {
       setCurrentFindingIndex(0);
     }
   }, [selectedCategory]);
+
+  useEffect(() => {
+    if (!easyNavigationButtons || !window.visualViewport) return;
+    const handle = () => {
+      const vv = window.visualViewport;
+      setKeyboardOffset(Math.max(0, window.innerHeight - vv.height));
+    };
+    window.visualViewport.addEventListener("resize", handle);
+    return () => window.visualViewport.removeEventListener("resize", handle);
+  }, [easyNavigationButtons]);
 
   const goToStep = useCallback((step) => {
     setCurrentStep(Math.max(0, Math.min(step, TOTAL_STEPS - 1)));
@@ -167,6 +178,8 @@ const MobileReportFlow = ({ onOpenSettings }) => {
       sx={{
         bgcolor: "background.default",
         color: "text.primary",
+        pb: keyboardOffset > 0 ? `${keyboardOffset}px` : undefined,
+        transition: easyNavigationButtons ? "padding-bottom 0.15s" : undefined,
       }}
     >
       {/* Header */}
@@ -242,15 +255,6 @@ const MobileReportFlow = ({ onOpenSettings }) => {
 
               {showCardFindings ? (
                 <>
-                  <TextField
-                    fullWidth
-                    label="Patient Name (Optional)"
-                    variant="outlined"
-                    size="small"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    sx={{ flexShrink: 0, mb: 2 }}
-                  />
                   {findings.length > 0 && currentFindingIndex < findings.length ? (
                     <div className="findings-card"
                       style={{

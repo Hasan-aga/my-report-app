@@ -22,7 +22,9 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
     showSaveReport,
     setShowSaveReport,
     showCardFindings,
-    setShowCardFindings
+    setShowCardFindings,
+    easyNavigationButtons,
+    setEasyNavigationButtons
   } = useSettings()
 
   const handleFontSizeChange = (event, value) => {
@@ -49,10 +51,12 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 600,
+          width: { xs: "92%", sm: 600 },
+          maxHeight: { xs: "85vh", sm: "auto" },
+          overflowY: "auto",
           bgcolor: "background.paper",
           boxShadow: 24,
-          p: 4,
+          p: { xs: 2.5, sm: 4 },
           borderRadius: 2
         }}
       >
@@ -71,7 +75,6 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           alignItems="center"
           mt={2}
           color="text.primary"
-          whiteSpace="nowrap" // Prevent line breaks
         >
           <Typography>Screen font size</Typography>
           <Slider
@@ -195,6 +198,24 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
               setShowCardFindings(e.target.checked)
               localStorage.setItem(
                 "showCardFindings",
+                JSON.stringify(e.target.checked)
+              )
+            }}
+          />
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems="center"
+          mt={1}
+        >
+          <Typography color="text.primary">Easy Navigation Buttons</Typography>
+          <Switch
+            checked={easyNavigationButtons}
+            onChange={(e) => {
+              setEasyNavigationButtons(e.target.checked)
+              localStorage.setItem(
+                "easyNavigationButtons",
                 JSON.stringify(e.target.checked)
               )
             }}
