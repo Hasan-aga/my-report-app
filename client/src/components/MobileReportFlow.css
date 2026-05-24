@@ -167,6 +167,38 @@
   flex-shrink: 0;
 }
 
+/* Card view findings */
+.findings-card {
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  margin-bottom: 8px;
+}
+
+.findings-card textarea {
+  border: none;
+  background: transparent;
+  resize: vertical;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-family: inherit;
+  outline: none;
+  padding: 4px 0;
+  min-height: 60px;
+}
+
+.findings-card textarea::placeholder {
+  opacity: 0.4;
+}
+
+.findings-card-delete {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .mobile-add-finding {
   width: 100%;
   padding: 12px;

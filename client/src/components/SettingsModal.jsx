@@ -20,7 +20,9 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
     showAdvancedRecording,
     setShowAdvancedRecording,
     showSaveReport,
-    setShowSaveReport
+    setShowSaveReport,
+    showCardFindings,
+    setShowCardFindings
   } = useSettings()
 
   const handleFontSizeChange = (event, value) => {
@@ -175,6 +177,24 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
               setShowSaveReport(e.target.checked)
               localStorage.setItem(
                 "showSaveReport",
+                JSON.stringify(e.target.checked)
+              )
+            }}
+          />
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems="center"
+          mt={1}
+        >
+          <Typography color="text.primary">Card-by-Card Findings Editor</Typography>
+          <Switch
+            checked={showCardFindings}
+            onChange={(e) => {
+              setShowCardFindings(e.target.checked)
+              localStorage.setItem(
+                "showCardFindings",
                 JSON.stringify(e.target.checked)
               )
             }}

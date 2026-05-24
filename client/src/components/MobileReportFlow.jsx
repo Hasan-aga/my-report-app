@@ -15,9 +15,10 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config";
 import PDFService from "../services/PDFService";
+import { useSettings } from "../../hooks/useSettings";
 import "./MobileReportFlow.css";
 
 // Simple unique ID generator that works on all browsers/devices
@@ -32,8 +33,10 @@ const TOTAL_STEPS = 3;
 const MobileReportFlow = ({ onOpenSettings }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
+  const { showCardFindings } = useSettings();
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [currentFindingIndex, setCurrentFindingIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [patientName, setPatientName] = useState("");
   const [findings, setFindings] = useState([]);
@@ -52,6 +55,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
           text,
         })),
       );
+      setCurrentFindingIndex(0);
     }
   }, [selectedCategory]);
 
@@ -111,6 +115,48 @@ const MobileReportFlow = ({ onOpenSettings }) => {
 
   const handleGoHome = () => {
     goToStep(0);
+  };
+
+  const handlePrevCard = () => {
+    if (currentFindingIndex > 0) {
+      setCurrentFindingIndex((prev) => prev - 1);
+    } else {
+      goToStep(0);
+    }
+  };
+
+  const handleNextCard = () => {
+    if (currentFindingIndex < findings.length - 1) {
+      setCurrentFindingIndex((prev) => prev + 1);
+    } else {
+      goToStep(2);
+    }
+  };
+
+  const handleCardFindingChange = (newText) => {
+    setFindings((prev) => {
+      const updated = [...prev];
+      updated[currentFindingIndex] = { ...updated[currentFindingIndex], text: newText };
+      return updated;
+    });
+  };
+
+  const handleRemoveFindingFromCard = () => {
+    const idx = currentFindingIndex;
+    const newFindings = findings.filter((_, i) => i !== idx);
+    setFindings(newFindings);
+    if (idx >= newFindings.length && newFindings.length > 0) {
+      setCurrentFindingIndex(newFindings.length - 1);
+    } else if (newFindings.length === 0) {
+      setCurrentFindingIndex(0);
+    }
+  };
+
+  const handleAddFindingFromReview = () => {
+    const nextIndex = findings.length;
+    setFindings((prev) => [...prev, { text: "", id: generateId() }]);
+    setCurrentFindingIndex(nextIndex);
+    goToStep(1);
   };
 
   const stepLabels = ["Select Category", "Edit Findings", "Review & Print"];
@@ -194,62 +240,116 @@ const MobileReportFlow = ({ onOpenSettings }) => {
             <div className="findings-editor-content">
               <h2>{categoryData?.name || "Category"} Findings</h2>
 
-              <TextField
-                fullWidth
-                label="Patient Name (Optional)"
-                variant="outlined"
-                size="small"
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
-                sx={{ flexShrink: 0 }}
-              />
-
-              <div className="findings-list">
-                {findings.map((finding, index) => (
-                  <div
-                    key={finding.id}
-                    className="mobile-finding-item"
-                    style={{
-                      backgroundColor: isDark
-                        ? "rgba(255,255,255,0.06)"
-                        : "#f8f9fa",
-                      borderColor: isDark
-                        ? "rgba(255,255,255,0.12)"
-                        : "rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    <textarea
-                      value={finding.text}
-                      onChange={(e) =>
-                        handleFindingChange(index, e.target.value)
-                      }
-                      placeholder="Enter finding..."
-                      rows={2}
-                      style={{ color: "inherit" }}
-                    />
-                    <div className="mobile-finding-actions">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleRemoveFinding(index)}
-                        aria-label="Remove finding"
-                        sx={{ fontSize: "16px" }}
-                      >
-                        <span>✕</span>
-                      </IconButton>
+              {showCardFindings ? (
+                <>
+                  <TextField
+                    fullWidth
+                    label="Patient Name (Optional)"
+                    variant="outlined"
+                    size="small"
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                    sx={{ flexShrink: 0, mb: 2 }}
+                  />
+                  {findings.length > 0 && currentFindingIndex < findings.length ? (
+                    <div className="findings-card"
+                      style={{
+                        backgroundColor: isDark
+                          ? "rgba(255,255,255,0.06)"
+                          : "#f8f9fa",
+                        border: `1px solid ${
+                          isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"
+                        }`,
+                      }}
+                    >
+                      <textarea
+                        value={findings[currentFindingIndex]?.text || ""}
+                        onChange={(e) =>
+                          handleCardFindingChange(e.target.value)
+                        }
+                        placeholder="Enter finding..."
+                        rows={3}
+                        style={{
+                          color: "inherit",
+                          width: "100%",
+                          resize: "vertical",
+                        }}
+                      />
+                      <div className="findings-card-delete">
+                        <IconButton
+                          size="small"
+                          onClick={handleRemoveFindingFromCard}
+                          aria-label="Remove finding"
+                          sx={{ fontSize: "16px" }}
+                        >
+                          <span>✕</span>
+                        </IconButton>
+                      </div>
                     </div>
+                  ) : (
+                    <p>No findings available</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <TextField
+                    fullWidth
+                    label="Patient Name (Optional)"
+                    variant="outlined"
+                    size="small"
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                    sx={{ flexShrink: 0 }}
+                  />
+
+                  <div className="findings-list">
+                    {findings.map((finding, index) => (
+                      <div
+                        key={finding.id}
+                        className="mobile-finding-item"
+                        style={{
+                          backgroundColor: isDark
+                            ? "rgba(255,255,255,0.06)"
+                            : "#f8f9fa",
+                          borderColor: isDark
+                            ? "rgba(255,255,255,0.12)"
+                            : "rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        <textarea
+                          value={finding.text}
+                          onChange={(e) =>
+                            handleFindingChange(index, e.target.value)
+                          }
+                          placeholder="Enter finding..."
+                          rows={2}
+                          style={{ color: "inherit" }}
+                        />
+                        <div className="mobile-finding-actions">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleRemoveFinding(index)}
+                            aria-label="Remove finding"
+                            sx={{ fontSize: "16px" }}
+                          >
+                            <span>✕</span>
+                          </IconButton>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      className="mobile-add-finding"
+                      onClick={handleAddFinding}
+                      style={{
+                        color: theme.palette.primary.main,
+                        borderColor: theme.palette.primary.main,
+                      }}
+                    >
+                      + Add Finding
+                    </button>
                   </div>
-                ))}
-                <button
-                  className="mobile-add-finding"
-                  onClick={handleAddFinding}
-                  style={{
-                    color: theme.palette.primary.main,
-                    borderColor: theme.palette.primary.main,
-                  }}
-                >
-                  + Add Finding
-                </button>
-              </div>
+                </>
+              )}
             </div>
           </Box>
 
@@ -284,7 +384,21 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                       <li key={i}>{f.text}</li>
                     ))}
                   </ul>
-                </div>
+</div>
+                )}
+
+              {showCardFindings && (
+                <button
+                  className="mobile-add-finding"
+                  onClick={handleAddFindingFromReview}
+                  style={{
+                    color: theme.palette.primary.main,
+                    borderColor: theme.palette.primary.main,
+                    margin: "8px 0",
+                  }}
+                >
+                  + Add Finding
+                </button>
               )}
 
               <button
@@ -343,61 +457,102 @@ const MobileReportFlow = ({ onOpenSettings }) => {
           borderColor: "divider",
         }}
       >
-        <button
-          className="mobile-nav-btn mobile-nav-btn-back"
-          disabled={currentStep === 0}
-          onClick={() => goToStep(currentStep - 1)}
-          style={{
-            backgroundColor: isDark
-              ? "rgba(255,255,255,0.08)"
-              : "rgba(0,0,0,0.05)",
-            color:
-              currentStep === 0
-                ? isDark
-                  ? "rgba(255,255,255,0.2)"
-                  : "rgba(0,0,0,0.2)"
-                : "inherit",
-            visibility: currentStep === 0 ? "hidden" : "visible",
-          }}
-        >
-          <ArrowBack fontSize="small" /> Back
-        </button>
+        {showCardFindings && currentStep === 1 && findings.length > 0 ? (
+          <>
+            <button
+              className="mobile-nav-btn mobile-nav-btn-back"
+              onClick={handlePrevCard}
+              style={{
+                backgroundColor: isDark
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(0,0,0,0.05)",
+                color: "inherit",
+              }}
+            >
+              <ArrowBack fontSize="small" />
+            </button>
 
-        <span
-          style={{
-            fontSize: "0.85rem",
-            opacity: 0.6,
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          {stepLabels[currentStep]}
-        </span>
+            <span
+              style={{
+                fontSize: "0.85rem",
+                opacity: 0.6,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Finding {currentFindingIndex + 1} of {findings.length}
+            </span>
 
-        {currentStep < TOTAL_STEPS - 1 ? (
-          <button
-            className="mobile-nav-btn mobile-nav-btn-forward"
-            onClick={() => goToStep(currentStep + 1)}
-            disabled={currentStep === 0 && !selectedCategory}
-            style={{
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-              opacity: currentStep === 0 && !selectedCategory ? 0.4 : 1,
-            }}
-          >
-            Next <ArrowForward fontSize="small" />
-          </button>
+            <button
+              className="mobile-nav-btn mobile-nav-btn-forward"
+              onClick={handleNextCard}
+              style={{
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+              }}
+            >
+              <ArrowForward fontSize="small" />
+            </button>
+          </>
         ) : (
-          <button
-            className="mobile-nav-btn mobile-nav-btn-forward"
-            onClick={handleGoHome}
-            style={{
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-            }}
-          >
-            <Home fontSize="small" /> Home
-          </button>
+          <>
+            <button
+              className="mobile-nav-btn mobile-nav-btn-back"
+              disabled={currentStep === 0}
+              onClick={() => goToStep(currentStep - 1)}
+              style={{
+                backgroundColor: isDark
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(0,0,0,0.05)",
+                color:
+                  currentStep === 0
+                    ? isDark
+                      ? "rgba(255,255,255,0.2)"
+                      : "rgba(0,0,0,0.2)"
+                    : "inherit",
+                visibility: currentStep === 0 ? "hidden" : "visible",
+              }}
+            >
+              <ArrowBack fontSize="small" /> Back
+            </button>
+
+            <span
+              style={{
+                fontSize: "0.85rem",
+                opacity: 0.6,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              {stepLabels[currentStep]}
+            </span>
+
+            {currentStep < TOTAL_STEPS - 1 ? (
+              <button
+                className="mobile-nav-btn mobile-nav-btn-forward"
+                onClick={() => goToStep(currentStep + 1)}
+                disabled={currentStep === 0 && !selectedCategory}
+                style={{
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                  opacity: currentStep === 0 && !selectedCategory ? 0.4 : 1,
+                }}
+              >
+                Next <ArrowForward fontSize="small" />
+              </button>
+            ) : (
+              <button
+                className="mobile-nav-btn mobile-nav-btn-forward"
+                onClick={handleGoHome}
+                style={{
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                }}
+              >
+                <Home fontSize="small" /> Home
+              </button>
+            )}
+          </>
         )}
       </Box>
 
