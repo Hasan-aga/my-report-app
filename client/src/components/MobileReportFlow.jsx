@@ -114,8 +114,17 @@ const MobileReportFlow = ({ onOpenSettings }) => {
         throw new Error("Generated PDF is empty");
       }
       await PDFService.printPDF(pdfBytes);
-      // Return to card 1 after printing
-      goToStep(0);
+      // On mobile, print() returns before the print sheet is dismissed.
+      // Wait for focus to return before navigating home.
+      const onFocus = () => {
+        goToStep(0);
+        window.removeEventListener("focus", onFocus);
+      };
+      window.addEventListener("focus", onFocus);
+      setTimeout(() => {
+        window.removeEventListener("focus", onFocus);
+        goToStep(0);
+      }, 3000);
     } catch (err) {
       console.error("Print error:", err);
       setError(err.message);
