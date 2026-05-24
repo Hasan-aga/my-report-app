@@ -58,4 +58,9 @@ The app gets a pdf template from its backend and fills that template with data. 
 
 ## todo
 
-create self contained text editor and use it with speech rec
+create self contained text editor and use it with speech rec.
+cleanup the final page.
+add option to print blank reports.
+research offline speech to text options for ios and linux.
+clicking anywhere in the finding's textarea triggers the mobile's keyboard.
+simplify the interaction with findings (the delete symbol is too much).
