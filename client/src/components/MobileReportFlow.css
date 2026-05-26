@@ -188,6 +188,8 @@
   outline: none;
   padding: 4px 0;
   min-height: 60px;
+  flex: 1;
+  width: 100%;
 }
 
 .findings-card textarea::placeholder {
@@ -272,6 +274,7 @@
   font-size: 0.85rem;
   margin-bottom: 4px;
   line-height: 1.4;
+  white-space: pre-wrap;
 }
 
 .print-button-large {

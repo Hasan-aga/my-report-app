@@ -280,7 +280,6 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                           handleCardFindingChange(e.target.value)
                         }
                         placeholder="Enter finding..."
-                        rows={3}
                         style={{
                           color: "inherit",
                           width: "100%",
@@ -334,7 +333,6 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                             handleFindingChange(index, e.target.value)
                           }
                           placeholder="Enter finding..."
-                          rows={2}
                           style={{ color: "inherit" }}
                         />
                         <div className="mobile-finding-actions">
