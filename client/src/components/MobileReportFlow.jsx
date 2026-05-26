@@ -1,7 +1,6 @@
 import {
   ArrowBack,
   ArrowForward,
-  CheckCircle,
   Home,
   Print,
   Settings,
@@ -369,10 +368,32 @@ const MobileReportFlow = ({ onOpenSettings }) => {
           {/* CARD 3: Review & Print */}
           <Box className="mobile-card">
             <div className="review-content">
-              <CheckCircle
-                sx={{ fontSize: 56, color: theme.palette.primary.main }}
-              />
-              <h2>Ready to Print</h2>
+              <div className="review-actions-row">
+                <button
+                  className="print-button-large"
+                  disabled={findings.length === 0 || printing}
+                  onClick={handlePrint}
+                  style={{
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                  }}
+                >
+                  <Print fontSize="small" /> {printing ? "Printing..." : "Print Report"}
+                </button>
+                <button
+                  className="home-button"
+                  onClick={handleGoHome}
+                  style={{
+                    backgroundColor: isDark
+                      ? "rgba(255,255,255,0.1)"
+                      : "rgba(0,0,0,0.06)",
+                    color: "inherit",
+                  }}
+                >
+                  <Home fontSize="small" /> Home
+                </button>
+              </div>
+
               <p className="review-summary">
                 {categoryData?.name} report with {findings.length} finding
                 {findings.length !== 1 ? "s" : ""}
@@ -397,47 +418,8 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                       <li key={i}>{f.text}</li>
                     ))}
                   </ul>
-</div>
-                )}
-
-              {showCardFindings && (
-                <button
-                  className="mobile-add-finding"
-                  onClick={handleAddFindingFromReview}
-                  style={{
-                    color: theme.palette.primary.main,
-                    borderColor: theme.palette.primary.main,
-                    margin: "8px 0",
-                  }}
-                >
-                  + Add Finding
-                </button>
+                </div>
               )}
-
-              <button
-                className="print-button-large"
-                disabled={findings.length === 0 || printing}
-                onClick={handlePrint}
-                style={{
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText,
-                }}
-              >
-                <Print /> {printing ? "Printing..." : "Print Report"}
-              </button>
-
-              <button
-                className="home-button"
-                onClick={handleGoHome}
-                style={{
-                  backgroundColor: isDark
-                    ? "rgba(255,255,255,0.1)"
-                    : "rgba(0,0,0,0.06)",
-                  color: "inherit",
-                }}
-              >
-                <Home fontSize="small" /> Back to Categories
-              </button>
             </div>
           </Box>
         </Box>
@@ -556,13 +538,18 @@ const MobileReportFlow = ({ onOpenSettings }) => {
             ) : (
               <button
                 className="mobile-nav-btn mobile-nav-btn-forward"
-                onClick={handleGoHome}
+                disabled
                 style={{
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText,
+                  backgroundColor: isDark
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(0,0,0,0.05)",
+                  color: isDark
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgba(0,0,0,0.2)",
+                  opacity: 0.4,
                 }}
               >
-                <Home fontSize="small" /> Home
+                Next <ArrowForward fontSize="small" />
               </button>
             )}
           </>
