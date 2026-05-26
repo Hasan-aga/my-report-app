@@ -64,3 +64,4 @@ add option to print blank reports.
 research offline speech to text options for ios and linux.
 clicking anywhere in the finding's textarea triggers the mobile's keyboard.
 simplify the interaction with findings (the delete symbol is too much).
+create a history system for reports to prevent loss.
