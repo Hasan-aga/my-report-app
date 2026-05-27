@@ -19,6 +19,16 @@ export const SettingsProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : false
   })
 
+  const [showCardFindings, setShowCardFindings] = useState(() => {
+    const saved = localStorage.getItem("showCardFindings")
+    return saved ? JSON.parse(saved) : false
+  })
+
+  const [easyNavigationButtons, setEasyNavigationButtons] = useState(() => {
+    const saved = localStorage.getItem("easyNavigationButtons")
+    return saved ? JSON.parse(saved) : false
+  })
+
   return (
     <SettingsContext.Provider
       value={{
@@ -27,7 +37,11 @@ export const SettingsProvider = ({ children }) => {
         showAdvancedRecording,
         setShowAdvancedRecording,
         showSaveReport,
-        setShowSaveReport
+        setShowSaveReport,
+        showCardFindings,
+        setShowCardFindings,
+        easyNavigationButtons,
+        setEasyNavigationButtons
       }}
     >
       {children}

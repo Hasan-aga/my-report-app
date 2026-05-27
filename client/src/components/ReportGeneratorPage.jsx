@@ -1,4 +1,4 @@
-import { Print } from "@mui/icons-material"
+import { Print } from "@mui/icons-material";
 import {
   Box,
   FormControl,
@@ -9,34 +9,41 @@ import {
   Radio,
   RadioGroup,
   Typography,
-  useTheme
-} from "@mui/material"
-import Grid from "@mui/material/Grid2"
-import { useState } from "react"
-import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config"
-import PDFService from "../services/PDFService"
-import DataSelectionPage from "./DataSelectionPage"
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { useState } from "react";
+import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config";
+import PDFService from "../services/PDFService";
+import DataSelectionPage from "./DataSelectionPage";
+import MobileReportFlow from "./MobileReportFlow";
 
-const ReportGeneratorPage = () => {
+const ReportGeneratorPage = ({ onOpenSettings }) => {
   const [selectedCategory, setSelectedCategory] = useState(
-    Object.keys(REPORT_DATA)[0] || ""
-  )
-  const theme = useTheme()
+    Object.keys(REPORT_DATA)[0] || "",
+  );
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const handlePrint = async () => {
     try {
-      const templatePath = PDF_TEMPLATE_PATH // Assuming PDF_TEMPLATE_PATH is the path to the vanilla template
-      const pdfBytes = await PDFService.getTemplate(templatePath)
+      const templatePath = PDF_TEMPLATE_PATH;
+      const pdfBytes = await PDFService.getTemplate(templatePath);
 
       if (!pdfBytes || pdfBytes.length === 0) {
-        throw new Error("Generated PDF is empty")
+        throw new Error("Generated PDF is empty");
       }
 
-      await PDFService.printPDF(pdfBytes)
+      await PDFService.printPDF(pdfBytes);
     } catch (error) {
-      console.error("Print error:", error)
-      // Handle error (e.g., show a notification)
+      console.error("Print error:", error);
     }
+  };
+
+  // Mobile layout — render cards with arrows
+  if (isMobile) {
+    return <MobileReportFlow onOpenSettings={onOpenSettings} />;
   }
 
   return (
@@ -45,7 +52,7 @@ const ReportGeneratorPage = () => {
         display: "flex",
         height: "100vh",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
       }}
     >
       <Box sx={{ flexGrow: 1 }}>
@@ -60,7 +67,7 @@ const ReportGeneratorPage = () => {
                     fontSize: "1.2rem",
                     fontWeight: "bold",
                     mb: 2,
-                    color: "primary.main"
+                    color: "primary.main",
                   }}
                 >
                   Report Categories
@@ -71,7 +78,7 @@ const ReportGeneratorPage = () => {
                   sx={{ width: "100%", gap: 1 }}
                 >
                   {Object.entries(REPORT_DATA).map(([key, category]) => {
-                    const isSelected = selectedCategory === key
+                    const isSelected = selectedCategory === key;
                     return (
                       <FormControlLabel
                         key={key}
@@ -82,8 +89,10 @@ const ReportGeneratorPage = () => {
                             variant="subtitle1"
                             sx={{
                               fontWeight: isSelected ? "bold" : "medium",
-                              color: isSelected ? "primary.contrastText" : "text.primary",
-                              width: "100%"
+                              color: isSelected
+                                ? "primary.contrastText"
+                                : "text.primary",
+                              width: "100%",
                             }}
                           >
                             {category.name}
@@ -95,18 +104,26 @@ const ReportGeneratorPage = () => {
                           py: 1.5,
                           width: "100%",
                           borderRadius: 1,
-                          backgroundColor: isSelected ? "primary.main" : "transparent",
-                          border: isSelected ? "1px solid" : "1px solid transparent",
-                          borderColor: isSelected ? "primary.dark" : "transparent",
+                          backgroundColor: isSelected
+                            ? "primary.main"
+                            : "transparent",
+                          border: isSelected
+                            ? "1px solid"
+                            : "1px solid transparent",
+                          borderColor: isSelected
+                            ? "primary.dark"
+                            : "transparent",
                           "&:hover": {
-                            backgroundColor: isSelected ? "primary.dark" : "action.hover",
-                            transform: "translateX(4px)"
+                            backgroundColor: isSelected
+                              ? "primary.dark"
+                              : "action.hover",
+                            transform: "translateX(4px)",
                           },
                           transition: "all 0.2s ease-in-out",
-                          cursor: "pointer"
+                          cursor: "pointer",
                         }}
                       />
-                    )
+                    );
                   })}
                 </RadioGroup>
               </FormControl>
@@ -136,8 +153,8 @@ const ReportGeneratorPage = () => {
               width: 40,
               height: 40,
               "&:hover": {
-                bgcolor: "action.hover"
-              }
+                bgcolor: "action.hover",
+              },
             }}
           >
             <Print />
@@ -145,7 +162,7 @@ const ReportGeneratorPage = () => {
         )}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default ReportGeneratorPage
+export default ReportGeneratorPage;

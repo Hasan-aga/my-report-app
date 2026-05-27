@@ -19,6 +19,7 @@ if (!fs.existsSync(templatesDir)) {
   fs.mkdirSync(templatesDir);
 }
 
+// TODO: /api/templates is duplicated here and in routes/template.js — remove this one
 // API Routes
 app.get('/api/templates', async (req, res) => {
   try {
