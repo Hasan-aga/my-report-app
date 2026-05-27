@@ -203,6 +203,7 @@ docker compose ps   # STATUS column shows "(healthy)"
 
 ## todo
 
+refactor the app so the settings and error debugging can be made by ai.
 create self contained text editor and use it with speech rec.
 cleanup the final page.
 add option to print blank reports.
