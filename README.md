@@ -56,6 +56,21 @@ The app gets a pdf template from its backend and fills that template with data. 
    ```
    Client will run on http://localhost:5001
 
+## tests
+Run with `npm test` from client/.
+
+Tests written (one behavior each)
+ 1. Renders a card for every category in REPORT_DATA
+ 2. Selecting a category advances to step 1 and seeds findings
+ 3. Disables Next on step 0 until a category is selected
+ 4. Editing a finding to whitespace removes it from the list
+ 5. + Add Finding appends a new empty finding row
+ 6. Print does nothing when there are no findings
+ 7. Print calls PDFService.fillTemplate + printPDF with the correct payload
+ 8. Print surfaces an error Snackbar when PDFService throws
+ 9. Removing the last finding in card view clamps currentFindingIndex
+10. Clicking the Settings icon invokes the onOpenSettings prop 
+
 ## todo
 
 create self contained text editor and use it with speech rec.
