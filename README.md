@@ -192,8 +192,8 @@ Both containers have healthchecks configured:
 
 | Container | Endpoint | Interval | Timeout | Retries | Start period |
 |-----------|----------|----------|---------|---------|--------------|
-| server | `http://localhost:5002/api/test` | 10s | 5s | 3 | 10s |
-| client | `http://localhost:80/` | 10s | 5s | 3 | 5s |
+| server | `curl -f http://localhost:5002/api/test` | 10s | 5s | 3 | 10s |
+| client | `curl -f http://localhost:80/` | 10s | 5s | 3 | 5s |
 
 The client's `depends_on` uses `condition: service_healthy` so it won't start until the server is ready. Check status with:
 
