@@ -24,7 +24,7 @@ services:
     networks:
       - internal
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/api/test"]
+      test: ["CMD", "wget", "-qO/dev/null", "http://localhost:5002/api/test"]
       interval: 10s
       timeout: 5s
       retries: 3
