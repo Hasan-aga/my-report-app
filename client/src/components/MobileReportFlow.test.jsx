@@ -69,7 +69,7 @@ describe("MobileReportFlow", () => {
     expect(nextBtn).toBeDisabled();
   });
 
-  it("editing a finding to whitespace removes it from the list", () => {
+  it("in list mode, editing a finding to whitespace removes it from the list", () => {
     renderFlow();
     clickCategory(REPORT_DATA.breast.name);
 
@@ -79,6 +79,24 @@ describe("MobileReportFlow", () => {
 
     expect(getFindingTextareas()).toHaveLength(original - 1);
     expect(screen.queryByDisplayValue(removedText)).not.toBeInTheDocument();
+  });
+
+  it("in card mode, clearing a finding in card mode removes it entirely", () => {
+    settingsValue = { showCardFindings: true, easyNavigationButtons: false };
+    renderFlow();
+    clickCategory(REPORT_DATA.breast.name);
+
+    const firstText = REPORT_DATA.breast.findings[0];
+    expect(screen.getByDisplayValue(firstText)).toBeInTheDocument();
+
+    fireEvent.change(
+      screen.getByDisplayValue(firstText),
+      { target: { value: "" } },
+    );
+
+    // Finding removed, next finding now shown in its place (card view shows one at a time)
+    expect(screen.queryByDisplayValue(firstText)).not.toBeInTheDocument();
+    expect(getFindingTextareas()).toHaveLength(1);
   });
 
   it("Add Finding appends a new empty finding row", () => {

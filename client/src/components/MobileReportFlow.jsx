@@ -153,6 +153,19 @@ const MobileReportFlow = ({ onOpenSettings }) => {
   };
 
   const handleCardFindingChange = (newText) => {
+    if (newText.trim() === "") {
+      const idx = currentFindingIndex;
+      setFindings((prev) => {
+        const newFindings = prev.filter((_, i) => i !== idx);
+        if (idx >= newFindings.length && newFindings.length > 0) {
+          setCurrentFindingIndex(newFindings.length - 1);
+        } else if (newFindings.length === 0) {
+          setCurrentFindingIndex(0);
+        }
+        return newFindings;
+      });
+      return;
+    }
     setFindings((prev) => {
       const updated = [...prev];
       updated[currentFindingIndex] = { ...updated[currentFindingIndex], text: newText };
@@ -398,7 +411,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                 {patientName ? ` for ${patientName}` : ""}
               </p>
 
-              {findings.length > 0 && (
+              {findings.filter(f => f.text.trim() !== "").length > 0 && (
                 <div
                   className="review-findings-preview"
                   style={{
@@ -412,7 +425,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                 >
                   <h4>FINDINGS:</h4>
                   <ul>
-                    {findings.map((f, i) => (
+                    {findings.filter(f => f.text.trim() !== "").map((f, i) => (
                       <li key={i}>{f.text}</li>
                     ))}
                   </ul>
