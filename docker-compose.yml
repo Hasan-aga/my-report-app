@@ -1,32 +1,48 @@
-version: "3.8"
-
 services:
   client:
     image: ghcr.io/hasan-aga/my-report-app-client:latest
-    ports:
-      - "80:80"
-    environment:
-      - VITE_API_URL=http://server:5002
     depends_on:
-      - server
+      server:
+        condition: service_healthy
     restart: always
+    networks:
+      - caddy
+      - internal
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   server:
     image: ghcr.io/hasan-aga/my-report-app-server:latest
-    ports:
-      - "5002:5002"
     volumes:
       - ./server/templates:/app/templates
     environment:
       - PORT=5002
       - NODE_ENV=production
     restart: always
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5002/api/test"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   watchtower:
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - WATCHTOWER_POLL_INTERVAL=300 # Check every 5 minutes
+      - WATCHTOWER_POLL_INTERVAL=300
       - WATCHTOWER_CLEANUP=true
     restart: always
+
+networks:
+  caddy:
+    external: true
+  internal:
+    driver: bridge
