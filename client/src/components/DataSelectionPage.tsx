@@ -38,7 +38,6 @@ import {
 } from "@mui/material"
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
-import SettingsModal from "./SettingsModal"
 import SpeechToTextButton from "./SpeechToTextButton"
 import TextEditor from "./TextEditor"
 import { useSettings } from "../../hooks/useSettings"
@@ -162,7 +161,6 @@ const DataSelectionPage = ({
   const [error, setError] = useState<string | null>(null)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [showEditor, setShowEditor] = useState<boolean>(false)
-  const [openSettings, setOpenSettings] = useState<boolean>(false)
   const [patientName, setPatientName] = useState<string>("")
   const [activeId, setActiveId] = useState<string | null>(null)
 
@@ -476,11 +474,6 @@ const DataSelectionPage = ({
           </Button>
         </Box>
       </Box>
-
-      <SettingsModal
-        open={openSettings}
-        onClose={() => setOpenSettings(false)}
-      />
     </Paper>
   )
 }

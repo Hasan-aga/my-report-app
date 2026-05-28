@@ -1,5 +1,5 @@
 // client/src/App.jsx
-import { Settings } from "@mui/icons-material";
+import Settings from "@mui/icons-material/Settings";
 import {
   Box,
   IconButton,
@@ -7,17 +7,17 @@ import {
   createTheme,
   useMediaQuery,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
-import { useSettings } from "../hooks/useSettings"; // Import useSettings
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { useSettings } from "../hooks/useSettings";
 import "./App.css";
-import "./assets/fonts/fonts.css";
-import ReportGeneratorPage from "./components/ReportGeneratorPage"; // Keep this import
-import SettingsModal from "./components/SettingsModal";
+import ReportGeneratorPage from "./components/ReportGeneratorPage";
 import { darkTheme, lightTheme } from "./themes";
 import ErrorBoundary from "./components/ErrorBoundary";
 
+const SettingsModal = lazy(() => import("./components/SettingsModal"));
+
 function App() {
-  const { fontSize } = useSettings(); // Get fontSize from context
+  const { fontSize } = useSettings();
   const [openSettings, setOpenSettings] = useState(false);
   const [mode, setMode] = useState(() => {
     return localStorage.getItem("theme") || "light";
@@ -67,12 +67,16 @@ function App() {
               </IconButton>
             </Box>
           )}
-          <SettingsModal
-            currentTheme={mode}
-            setTheme={setMode}
-            open={openSettings}
-            onClose={() => setOpenSettings(false)}
-          />
+          {openSettings && (
+            <Suspense fallback={null}>
+              <SettingsModal
+                currentTheme={mode}
+                setTheme={setMode}
+                open={openSettings}
+                onClose={() => setOpenSettings(false)}
+              />
+            </Suspense>
+          )}
           <ReportGeneratorPage onOpenSettings={() => setOpenSettings(true)} />
         </Box>
       </ThemeProvider>
