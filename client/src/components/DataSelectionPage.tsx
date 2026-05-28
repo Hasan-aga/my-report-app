@@ -36,11 +36,12 @@ import {
   TextField,
   Typography
 } from "@mui/material"
-import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react"
+import React, { ChangeEvent, KeyboardEvent, lazy, Suspense, useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
-import SpeechToTextButton from "./SpeechToTextButton"
-import TextEditor from "./TextEditor"
 import { useSettings } from "../../hooks/useSettings"
+
+const SpeechToTextButton = lazy(() => import("./SpeechToTextButton"))
+const TextEditor = lazy(() => import("./TextEditor"))
 
 interface Finding {
   text: string
@@ -145,9 +146,11 @@ const SortableItem = ({
         <Edit fontSize="small" />
       </IconButton>
       {showAdvancedRecording && (
-        <SpeechToTextButton
-          onTranscript={(text) => handleFindingChange(index, text)}
-        />
+        <Suspense fallback={null}>
+          <SpeechToTextButton
+            onTranscript={(text) => handleFindingChange(index, text)}
+          />
+        </Suspense>
       )}
     </ListItem>
   )
@@ -427,11 +430,13 @@ const DataSelectionPage = ({
         </Box>
 
         {showEditor && (
-          <TextEditor
-            initialText={findings[editingIndex]?.text || ""}
-            onSave={handleEditorSave}
-            onCancel={handleEditorCancel}
-          />
+          <Suspense fallback={null}>
+            <TextEditor
+              initialText={findings[editingIndex]?.text || ""}
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </Suspense>
         )}
 
         <Box
