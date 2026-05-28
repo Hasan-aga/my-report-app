@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config";
-import PDFService from "../services/PDFService";
 import { useSettings } from "../../hooks/useSettings";
 import "./MobileReportFlow.css";
 
@@ -98,6 +97,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
     if (findings.length === 0) return;
     setPrinting(true);
     try {
+      const { default: PDFService } = await import("../services/PDFService");
       const selectedData = [
         {
           category: categoryData.name,

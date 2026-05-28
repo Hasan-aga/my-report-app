@@ -34,7 +34,7 @@ import {
   TextField,
   Typography
 } from "@mui/material"
-import React, { ChangeEvent, KeyboardEvent, lazy, Suspense, useEffect, useState } from "react"
+import React, { ChangeEvent, KeyboardEvent, lazy, Suspense, useCallback, useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
 import { useSettings } from "../../hooks/useSettings"
 
@@ -66,15 +66,16 @@ const SortableItem = ({
   index,
   handleFindingChange,
   handleRemoveFinding,
-  handleEditFinding
+  handleEditFinding,
+  showAdvancedRecording
 }: {
   finding: Finding
   index: number
   handleFindingChange: (index: number, newText: string) => void
   handleRemoveFinding: (index: number) => void
   handleEditFinding: (index: number) => void
+  showAdvancedRecording: boolean
 }) => {
-  const { showAdvancedRecording, showSaveReport } = useSettings() as any
   const {
     attributes,
     listeners,
@@ -165,7 +166,7 @@ const DataSelectionPage = ({
   const [patientName, setPatientName] = useState<string>("")
   const [activeId, setActiveId] = useState<string | null>(null)
 
-  const { showSaveReport } = useSettings() as any
+  const { showSaveReport, showAdvancedRecording } = useSettings() as any
   const categoryData = (REPORT_DATA as ReportData)[category]
 
   // Initialize findings from category data
@@ -180,45 +181,51 @@ const DataSelectionPage = ({
     }
   }, [category, categoryData])
 
-  const handleFindingChange = (index: number, newText: string) => {
+  const handleFindingChange = useCallback((index: number, newText: string) => {
     setFindings((prev) => {
       const updated = [...prev]
       updated[index] = { ...updated[index], text: newText }
-      return updated.filter((finding) => finding.text.trim() !== "") // Remove empty findings
+      return updated
     })
-  }
+  }, [])
 
-  const handleAddNewFinding = () => {
+  const handleAddNewFinding = useCallback(() => {
     setFindings((prev) => [...prev, { text: "", id: crypto.randomUUID() }])
-  }
+  }, [])
 
-  const handleRemoveFinding = (index: number) => {
+  const handleRemoveFinding = useCallback((index: number) => {
     setFindings((prev) => prev.filter((_, i) => i !== index))
-  }
+  }, [])
 
-  const handleEditFinding = (index: number) => {
+  const handleEditFinding = useCallback((index: number) => {
     setEditingIndex(index)
     setShowEditor(true)
-  }
+  }, [])
 
-  const handleEditorSave = (newText: string) => {
-    handleFindingChange(editingIndex!, newText)
+  const handleEditorSave = useCallback((newText: string) => {
+    setFindings((prev) => {
+      if (editingIndex === null) return prev
+      const updated = [...prev]
+      updated[editingIndex] = { ...updated[editingIndex], text: newText }
+      return updated
+    })
     setShowEditor(false)
     setEditingIndex(null)
-  }
+  }, [editingIndex])
 
-  const handleEditorCancel = () => {
+  const handleEditorCancel = useCallback(() => {
     setShowEditor(false)
     setEditingIndex(null)
-  }
+  }, [])
 
   const handlePrint = async () => {
     try {
       const { default: PDFService } = await import("../services/PDFService")
+      const nonEmptyFindings = findings.filter((f) => f.text.trim() !== "")
       const selectedData = [
         {
           category: categoryData.name,
-          findings: findings.map((f) => f.text),
+          findings: nonEmptyFindings.map((f) => f.text),
           patientName: patientName
         }
       ]
@@ -245,10 +252,11 @@ const DataSelectionPage = ({
   const handleSave = async () => {
     try {
       const { default: PDFService } = await import("../services/PDFService")
+      const nonEmptyFindings = findings.filter((f) => f.text.trim() !== "")
       const selectedData = [
         {
           category: categoryData.name,
-          findings: findings.map((f) => f.text),
+          findings: nonEmptyFindings.map((f) => f.text),
           patientName: patientName
         }
       ]
@@ -287,19 +295,16 @@ const DataSelectionPage = ({
     setActiveId(null)
   }
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     const { active } = event
     setActiveId(active.id)
-  }
+  }, [])
+
   const arrayMove = (arr: Finding[], oldIndex: number, newIndex: number) => {
-    if (newIndex >= arr.length) {
-      let k = newIndex - arr.length + 1
-      while (k--) {
-        arr.push(undefined as any)
-      }
-    }
-    arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0])
-    return arr
+    const result = [...arr]
+    const [removed] = result.splice(oldIndex, 1)
+    result.splice(newIndex, 0, removed)
+    return result
   }
 
   if (!category) {
@@ -406,6 +411,7 @@ const DataSelectionPage = ({
                     handleFindingChange={handleFindingChange}
                     handleRemoveFinding={handleRemoveFinding}
                     handleEditFinding={handleEditFinding}
+                    showAdvancedRecording={showAdvancedRecording}
                   />
                 ))}
               </List>
