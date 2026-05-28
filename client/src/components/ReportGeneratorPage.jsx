@@ -1,4 +1,4 @@
-import { Print } from "@mui/icons-material";
+import Print from "@mui/icons-material/Print";
 import {
   Box,
   FormControl,

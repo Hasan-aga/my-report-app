@@ -14,14 +14,12 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import {
-  Add,
-  Clear,
-  Download,
-  DragHandle,
-  Edit,
-  Print
-} from "@mui/icons-material"
+import Add from "@mui/icons-material/Add"
+import Clear from "@mui/icons-material/Clear"
+import Download from "@mui/icons-material/Download"
+import DragHandle from "@mui/icons-material/DragHandle"
+import Edit from "@mui/icons-material/Edit"
+import Print from "@mui/icons-material/Print"
 import {
   Alert,
   Box,

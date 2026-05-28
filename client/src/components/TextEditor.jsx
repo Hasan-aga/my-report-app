@@ -1,4 +1,5 @@
-import { Check, Clear } from "@mui/icons-material"
+import Check from "@mui/icons-material/Check"
+import Clear from "@mui/icons-material/Clear"
 import {
   Dialog,
   DialogActions,

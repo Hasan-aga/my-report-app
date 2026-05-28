@@ -1,4 +1,6 @@
-import { Clear, DarkMode, LightMode } from "@mui/icons-material" // Import Clear icon
+import Clear from "@mui/icons-material/Clear"
+import DarkMode from "@mui/icons-material/DarkMode"
+import LightMode from "@mui/icons-material/LightMode"
 import {
   Box,
   IconButton,
