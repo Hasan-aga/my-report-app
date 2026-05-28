@@ -38,7 +38,6 @@ import {
 } from "@mui/material"
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react"
 import { REPORT_DATA } from "../constants/config"
-import PDFService from "../services/PDFService"
 import SettingsModal from "./SettingsModal"
 import SpeechToTextButton from "./SpeechToTextButton"
 import TextEditor from "./TextEditor"
@@ -216,6 +215,7 @@ const DataSelectionPage = ({
 
   const handlePrint = async () => {
     try {
+      const { default: PDFService } = await import("../services/PDFService")
       const selectedData = [
         {
           category: categoryData.name,
@@ -245,6 +245,7 @@ const DataSelectionPage = ({
 
   const handleSave = async () => {
     try {
+      const { default: PDFService } = await import("../services/PDFService")
       const selectedData = [
         {
           category: categoryData.name,

@@ -15,7 +15,6 @@ import {
 import Grid from "@mui/material/Grid2";
 import { useState } from "react";
 import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config";
-import PDFService from "../services/PDFService";
 import DataSelectionPage from "./DataSelectionPage";
 import MobileReportFlow from "./MobileReportFlow";
 
@@ -28,6 +27,7 @@ const ReportGeneratorPage = ({ onOpenSettings }) => {
 
   const handlePrint = async () => {
     try {
+      const { default: PDFService } = await import("../services/PDFService");
       const templatePath = PDF_TEMPLATE_PATH;
       const pdfBytes = await PDFService.getTemplate(templatePath);
 
