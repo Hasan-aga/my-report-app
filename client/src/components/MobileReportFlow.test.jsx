@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import MobileReportFlow from "./MobileReportFlow";
-import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config";
+import { PDF_TEMPLATE_PATH, PRINT_PLATFORM, REPORT_DATA } from "../constants/config";
 import PDFService from "../services/PDFService";
 
 // --- Mocks ---------------------------------------------------------------
@@ -158,6 +158,7 @@ describe("MobileReportFlow", () => {
       expect(PDFService.printPDF).toHaveBeenCalledTimes(1);
     });
     expect(PDFService.printPDF.mock.calls[0][0]).toBeInstanceOf(Uint8Array);
+    expect(PDFService.printPDF.mock.calls[0][1]).toBe(PRINT_PLATFORM.MOBILE);
   });
 
   it("Print surfaces an error Snackbar when PDFService throws", async () => {

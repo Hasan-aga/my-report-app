@@ -30,6 +30,11 @@ export const SPACE = 25; // Adjust this value for line spacing
 
 export const TITLE_TEXT = "U/S of ";
 
+export const PRINT_PLATFORM = {
+  DESKTOP: "desktop",
+  MOBILE: "mobile",
+};
+
 // Dummy data for demonstration
 export const REPORT_DATA = {
   breast: {

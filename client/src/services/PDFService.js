@@ -4,6 +4,7 @@ import rubik from "../assets/fonts/Rubik.ttf";
 import {
   FONT_SIZES,
   PDF_COORDINATES,
+  PRINT_PLATFORM,
   SPACE,
   TITLE_TEXT,
 } from "../constants/config";
@@ -309,8 +310,13 @@ class PDFService {
     }
   }
 
-  static async printPDF(pdfBytes) {
+  static async printPDF(pdfBytes, platform = PRINT_PLATFORM.DESKTOP) {
     try {
+      if (platform === PRINT_PLATFORM.MOBILE) {
+        window.print();
+        return;
+      }
+
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
 
