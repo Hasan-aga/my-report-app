@@ -299,16 +299,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                           resize: "vertical",
                         }}
                       />
-                      <div className="findings-card-delete">
-                        <IconButton
-                          size="small"
-                          onClick={handleRemoveFindingFromCard}
-                          aria-label="Remove finding"
-                          sx={{ fontSize: "16px" }}
-                        >
-                          <span>✕</span>
-                        </IconButton>
-                      </div>
+
                     </div>
                   ) : (
                     <p>No findings available</p>
