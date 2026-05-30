@@ -35,6 +35,11 @@ export const PRINT_PLATFORM = {
   MOBILE: "mobile",
 };
 
+export const PRINT_MODE = {
+  NATIVE: "native",
+  ONE_CLICK: "oneClick",
+};
+
 // Dummy data for demonstration
 export const REPORT_DATA = {
   breast: {

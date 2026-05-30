@@ -13,6 +13,7 @@ import {
   Typography
 } from "@mui/material"
 import React from "react"
+import { PRINT_MODE } from "../constants/config"
 import { useSettings } from "../../hooks/useSettings"
 
 const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
@@ -26,7 +27,9 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
     showCardFindings,
     setShowCardFindings,
     easyNavigationButtons,
-    setEasyNavigationButtons
+    setEasyNavigationButtons,
+    printMode,
+    setPrintMode
   } = useSettings()
 
   const handleFontSizeChange = (event, value) => {
@@ -220,6 +223,29 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
                 "easyNavigationButtons",
                 JSON.stringify(e.target.checked)
               )
+            }}
+          />
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems="center"
+          mt={1}
+        >
+          <Box>
+            <Typography color="text.primary">One-Click Print (Mobile)</Typography>
+            <Typography variant="caption" color="text.secondary">
+              {printMode === PRINT_MODE.ONE_CLICK
+                ? "Renders PDF in-page for direct printing"
+                : "Opens PDF in native viewer"}
+            </Typography>
+          </Box>
+          <Switch
+            checked={printMode === PRINT_MODE.ONE_CLICK}
+            onChange={(e) => {
+              const mode = e.target.checked ? PRINT_MODE.ONE_CLICK : PRINT_MODE.NATIVE
+              setPrintMode(mode)
+              localStorage.setItem("printMode", mode)
             }}
           />
         </Stack>

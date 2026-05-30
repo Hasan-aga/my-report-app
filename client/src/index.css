@@ -66,3 +66,28 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#print-container {
+  display: none;
+}
+
+@media print {
+  #root {
+    display: none !important;
+  }
+
+  #print-container {
+    display: block !important;
+  }
+
+  .pdf-print-page {
+    display: block;
+    width: 100%;
+    height: auto;
+    page-break-after: always;
+  }
+
+  .pdf-print-page:last-child {
+    page-break-after: auto;
+  }
+}

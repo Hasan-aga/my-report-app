@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from "react"
-import { UI_FONT_SIZE } from "../src/constants/config"
+import { PRINT_MODE, UI_FONT_SIZE } from "../src/constants/config"
 
 const SettingsContext = createContext()
 
@@ -29,6 +29,11 @@ export const SettingsProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : false
   })
 
+  const [printMode, setPrintMode] = useState(() => {
+    const saved = localStorage.getItem("printMode")
+    return saved || PRINT_MODE.NATIVE
+  })
+
   const value = useMemo(() => ({
     fontSize,
     setFontSize,
@@ -39,8 +44,10 @@ export const SettingsProvider = ({ children }) => {
     showCardFindings,
     setShowCardFindings,
     easyNavigationButtons,
-    setEasyNavigationButtons
-  }), [fontSize, showAdvancedRecording, showSaveReport, showCardFindings, easyNavigationButtons])
+    setEasyNavigationButtons,
+    printMode,
+    setPrintMode
+  }), [fontSize, showAdvancedRecording, showSaveReport, showCardFindings, easyNavigationButtons, printMode])
 
   return (
     <SettingsContext.Provider value={value}>

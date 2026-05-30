@@ -4,6 +4,7 @@ import rubik from "../assets/fonts/Rubik.ttf";
 import {
   FONT_SIZES,
   PDF_COORDINATES,
+  PRINT_MODE,
   PRINT_PLATFORM,
   SPACE,
   TITLE_TEXT,
@@ -310,10 +311,21 @@ class PDFService {
     }
   }
 
-  static async printPDF(pdfBytes, platform = PRINT_PLATFORM.DESKTOP) {
+  static async printPDF(pdfBytes, platform = PRINT_PLATFORM.DESKTOP, printMode = PRINT_MODE.NATIVE) {
     try {
+      if (platform === PRINT_PLATFORM.MOBILE && printMode === PRINT_MODE.ONE_CLICK) {
+        await this.printPDFCanvas(pdfBytes);
+        return;
+      }
+
       if (platform === PRINT_PLATFORM.MOBILE) {
-        window.print();
+        const blob = new Blob([pdfBytes], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.click();
+        URL.revokeObjectURL(url);
         return;
       }
 
@@ -324,7 +336,6 @@ class PDFService {
       const existingIframe = document.getElementById("print-iframe");
       if (existingIframe) {
         document.body.removeChild(existingIframe);
-        // Revoke the old Object URL to avoid memory leaks
         if (existingIframe.dataset.objectUrl) {
           URL.revokeObjectURL(existingIframe.dataset.objectUrl);
         }
@@ -333,17 +344,15 @@ class PDFService {
       // Create an invisible iframe
       const iframe = document.createElement("iframe");
       iframe.id = "print-iframe";
-      iframe.dataset.objectUrl = url; // Store URL for cleanup
+      iframe.dataset.objectUrl = url;
       iframe.style.position = "fixed";
       iframe.style.width = "0";
       iframe.style.height = "0";
       iframe.style.border = "none";
       iframe.src = url;
 
-      // Add iframe to body
       document.body.appendChild(iframe);
 
-      // Wait for the iframe to load
       iframe.onload = () => {
         try {
           iframe.contentWindow.focus();
@@ -351,13 +360,54 @@ class PDFService {
         } catch (e) {
           console.error("Print error:", e);
         }
-        // No auto-cleanup here to prevent dialog from closing.
-        // The iframe will be cleaned up on the next print call.
       };
     } catch (error) {
       console.error("Error printing PDF:", error);
       throw error;
     }
+  }
+
+  static async printPDFCanvas(pdfBytes) {
+    const pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+    const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
+    const isMobile = window.innerWidth < 768;
+    const scale = isMobile ? 2 : 3;
+
+    let container = document.getElementById("print-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "print-container";
+      document.body.appendChild(container);
+    }
+    container.innerHTML = "";
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement("canvas");
+      canvas.className = "pdf-print-page";
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      container.appendChild(canvas);
+
+      await page.render({
+        canvasContext: canvas.getContext("2d"),
+        viewport,
+      }).promise;
+    }
+
+    window.print();
+
+    const cleanup = () => {
+      container.innerHTML = "";
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
   }
 }
 

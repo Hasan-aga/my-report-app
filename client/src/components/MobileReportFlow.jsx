@@ -15,7 +15,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import { PDF_TEMPLATE_PATH, PRINT_PLATFORM, REPORT_DATA } from "../constants/config";
+import { PDF_TEMPLATE_PATH, PRINT_MODE, PRINT_PLATFORM, REPORT_DATA } from "../constants/config";
 import { useSettings } from "../../hooks/useSettings";
 import "./MobileReportFlow.css";
 
@@ -31,7 +31,7 @@ const TOTAL_STEPS = 3;
 const MobileReportFlow = ({ onOpenSettings }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-  const { showCardFindings, easyNavigationButtons } = useSettings();
+  const { showCardFindings, easyNavigationButtons, printMode } = useSettings();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [currentFindingIndex, setCurrentFindingIndex] = useState(0);
@@ -112,7 +112,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
       if (!pdfBytes || pdfBytes.length === 0) {
         throw new Error("Generated PDF is empty");
       }
-      await PDFService.printPDF(pdfBytes, PRINT_PLATFORM.MOBILE);
+      await PDFService.printPDF(pdfBytes, PRINT_PLATFORM.MOBILE, printMode);
     } catch (err) {
       console.error("Print error:", err);
       setError(err.message);
