@@ -373,8 +373,18 @@ class PDFService {
       `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
     const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
-    const isMobile = window.innerWidth < 768;
-    const scale = isMobile ? 2 : 3;
+
+    const page = await pdf.getPage(1);
+    const pageWidth = page.getViewport({ scale: 1 }).width;
+    const pageHeight = page.getViewport({ scale: 1 }).height;
+
+    const marginPT = 10 * 2.835;
+    const printableWidth = pageWidth - 2 * marginPT;
+    const printableHeight = pageHeight - 2 * marginPT;
+    const scale = Math.min(
+      printableWidth / pageWidth,
+      printableHeight / pageHeight,
+    ) * (96 / 72);
 
     let container = document.getElementById("print-container");
     if (!container) {
@@ -385,8 +395,8 @@ class PDFService {
     container.innerHTML = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const viewport = page.getViewport({ scale });
+      const pg = await pdf.getPage(i);
+      const viewport = pg.getViewport({ scale });
 
       const canvas = document.createElement("canvas");
       canvas.className = "pdf-print-page";
@@ -395,7 +405,7 @@ class PDFService {
 
       container.appendChild(canvas);
 
-      await page.render({
+      await pg.render({
         canvasContext: canvas.getContext("2d"),
         viewport,
       }).promise;
