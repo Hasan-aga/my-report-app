@@ -183,29 +183,6 @@ describe("MobileReportFlow", () => {
     errSpy.mockRestore();
   });
 
-  it("removing the last finding in card view clamps currentFindingIndex", () => {
-    settingsValue = { showCardFindings: true, easyNavigationButtons: false };
-    renderFlow();
-    clickCategory(REPORT_DATA.breast.name);
-
-    const total = REPORT_DATA.breast.findings.length;
-
-    // Navigate to the last finding via the card-view forward arrow
-    // (the only non-disabled button without text in this state)
-    const forwardBtn = document.querySelector(".mobile-nav-btn-forward");
-    for (let i = 0; i < total - 1; i += 1) {
-      fireEvent.click(forwardBtn);
-    }
-    expect(
-      screen.getByText(`Finding ${total} of ${total}`),
-    ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText("Remove finding"));
-
-    expect(
-      screen.getByText(`Finding ${total - 1} of ${total - 1}`),
-    ).toBeInTheDocument();
-  });
 
   it("clicking the Settings icon invokes onOpenSettings prop", () => {
     const onOpenSettings = vi.fn();

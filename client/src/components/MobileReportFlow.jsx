@@ -94,14 +94,14 @@ const MobileReportFlow = ({ onOpenSettings }) => {
   };
 
   const handlePrint = async () => {
-    if (findings.length === 0) return;
+    if (findings.filter((f) => f.text.trim() !== "").length === 0) return;
     setPrinting(true);
     try {
       const { default: PDFService } = await import("../services/PDFService");
       const selectedData = [
         {
           category: categoryData.name,
-          findings: findings.map((f) => f.text),
+          findings: findings.filter((f) => f.text.trim() !== "").map((f) => f.text),
           patientName,
         },
       ];
@@ -153,19 +153,6 @@ const MobileReportFlow = ({ onOpenSettings }) => {
   };
 
   const handleCardFindingChange = (newText) => {
-    if (newText.trim() === "") {
-      const idx = currentFindingIndex;
-      setFindings((prev) => {
-        const newFindings = prev.filter((_, i) => i !== idx);
-        if (idx >= newFindings.length && newFindings.length > 0) {
-          setCurrentFindingIndex(newFindings.length - 1);
-        } else if (newFindings.length === 0) {
-          setCurrentFindingIndex(0);
-        }
-        return newFindings;
-      });
-      return;
-    }
     setFindings((prev) => {
       const updated = [...prev];
       updated[currentFindingIndex] = { ...updated[currentFindingIndex], text: newText };
@@ -299,16 +286,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
                           resize: "vertical",
                         }}
                       />
-                      <div className="findings-card-delete">
-                        <IconButton
-                          size="small"
-                          onClick={handleRemoveFindingFromCard}
-                          aria-label="Remove finding"
-                          sx={{ fontSize: "16px" }}
-                        >
-                          <span>✕</span>
-                        </IconButton>
-                      </div>
+
                     </div>
                   ) : (
                     <p>No findings available</p>
@@ -382,7 +360,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
               <div className="review-actions-row">
                 <button
                   className="print-button-large"
-                  disabled={findings.length === 0 || printing}
+                  disabled={findings.filter((f) => f.text.trim() !== "").length === 0 || printing}
                   onClick={handlePrint}
                   style={{
                     backgroundColor: theme.palette.primary.main,
@@ -406,7 +384,7 @@ const MobileReportFlow = ({ onOpenSettings }) => {
               </div>
 
               <p className="review-summary">
-                {categoryData?.name} report with {findings.length} finding
+                {categoryData?.name} report with {findings.filter((f) => f.text.trim() !== "").length} finding
                 {findings.length !== 1 ? "s" : ""}
                 {patientName ? ` for ${patientName}` : ""}
               </p>
