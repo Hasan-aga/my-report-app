@@ -203,10 +203,11 @@ docker compose ps   # STATUS column shows "(healthy)"
 
 ## todo
 
-create self contained text editor and use it with speech rec.
-cleanup the final page.
-add option to print blank reports.
-research offline speech to text options for ios and linux.
-clicking anywhere in the finding's textarea triggers the mobile's keyboard.
-simplify the interaction with findings (the delete symbol is too much).
-create a history system for reports to prevent loss.
+- [ ] refactor the app so the settings and error debugging can be made by ai
+- [ ] create self contained text editor and use it with speech rec.
+- [x] cleanup the final page.
+- [ ] add option to print blank reports.
+- [ ] research offline speech to text options for ios and linux.
+- [x] clicking anywhere in the finding's textarea triggers the mobile's keyboard.
+- [ ] simplify the interaction with findings (the delete symbol is too much).
+- [ ] create a history system for reports to prevent loss.
