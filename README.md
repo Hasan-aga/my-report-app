@@ -211,3 +211,6 @@ docker compose ps   # STATUS column shows "(healthy)"
 - [x] clicking anywhere in the finding's textarea triggers the mobile's keyboard.
 - [ ] simplify the interaction with findings (the delete symbol is too much).
 - [ ] create a history system for reports to prevent loss.
+- [ ] findings preview should be editable.
+- [ ] adding new finding should be simple.
+- [ ] print empty report
