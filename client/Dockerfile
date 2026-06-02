@@ -4,10 +4,12 @@ FROM node:18-alpine as build
 # Accept build arguments for commit info
 ARG COMMIT_SHA="unknown"
 ARG COMMIT_MESSAGE="unknown"
+ARG COMMIT_DATE="unknown"
 
 # Expose commit info to Vite
 ENV VITE_COMMIT_SHA=$COMMIT_SHA \
-    VITE_COMMIT_MESSAGE=$COMMIT_MESSAGE
+    VITE_COMMIT_MESSAGE=$COMMIT_MESSAGE \
+    VITE_COMMIT_DATE=$COMMIT_DATE
 
 WORKDIR /app
 COPY package*.json ./

@@ -14,6 +14,7 @@ import {
 } from "@mui/material"
 import React from "react"
 import { useSettings } from "../../hooks/useSettings"
+import { formatDate } from "../utils/formatDate"
 
 const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
   const {
@@ -44,6 +45,8 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
   const commitSHA = import.meta.env.VITE_COMMIT_SHA || "local-dev"
   const commitMessage =
     import.meta.env.VITE_COMMIT_MESSAGE || "No commit info available"
+  const commitDate = import.meta.env.VITE_COMMIT_DATE || "unknown"
+  const formattedCommitDate = formatDate(commitDate)
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -145,6 +148,19 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {commitMessage}
+          </Typography>
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignContent="center"
+          mt={2}
+        >
+          <Typography variant="caption" color="text.secondary">
+            Commit Date
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {formattedCommitDate}
           </Typography>
         </Stack>
 
