@@ -29,6 +29,11 @@ export const SettingsProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : false
   })
 
+  const [editableReviewFindings, setEditableReviewFindings] = useState(() => {
+    const saved = localStorage.getItem("editableReviewFindings")
+    return saved ? JSON.parse(saved) : false
+  })
+
   const value = useMemo(() => ({
     fontSize,
     setFontSize,
@@ -39,8 +44,10 @@ export const SettingsProvider = ({ children }) => {
     showCardFindings,
     setShowCardFindings,
     easyNavigationButtons,
-    setEasyNavigationButtons
-  }), [fontSize, showAdvancedRecording, showSaveReport, showCardFindings, easyNavigationButtons])
+    setEasyNavigationButtons,
+    editableReviewFindings,
+    setEditableReviewFindings
+  }), [fontSize, showAdvancedRecording, showSaveReport, showCardFindings, easyNavigationButtons, editableReviewFindings])
 
   return (
     <SettingsContext.Provider value={value}>
