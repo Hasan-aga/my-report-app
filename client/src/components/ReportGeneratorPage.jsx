@@ -13,10 +13,11 @@ import {
   useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config";
-import DataSelectionPage from "./DataSelectionPage";
-import MobileReportFlow from "./MobileReportFlow";
+
+const DataSelectionPage = lazy(() => import("./DataSelectionPage"));
+const MobileReportFlow = lazy(() => import("./MobileReportFlow"));
 
 const ReportGeneratorPage = ({ onOpenSettings }) => {
   const [selectedCategory, setSelectedCategory] = useState(
@@ -43,7 +44,11 @@ const ReportGeneratorPage = ({ onOpenSettings }) => {
 
   // Mobile layout — render cards with arrows
   if (isMobile) {
-    return <MobileReportFlow onOpenSettings={onOpenSettings} />;
+    return (
+      <Suspense fallback={null}>
+        <MobileReportFlow onOpenSettings={onOpenSettings} />
+      </Suspense>
+    );
   }
 
   return (
@@ -131,10 +136,12 @@ const ReportGeneratorPage = ({ onOpenSettings }) => {
           </Grid>
           {/* Findings Panel */}
           <Grid size={10}>
-            <DataSelectionPage
-              category={selectedCategory}
-              templatePath={PDF_TEMPLATE_PATH}
-            />
+            <Suspense fallback={null}>
+              <DataSelectionPage
+                category={selectedCategory}
+                templatePath={PDF_TEMPLATE_PATH}
+              />
+            </Suspense>
           </Grid>
         </Grid>
         {selectedCategory ? null : (
