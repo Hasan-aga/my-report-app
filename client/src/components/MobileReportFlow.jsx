@@ -1,10 +1,6 @@
-import {
-  ArrowBack,
-  ArrowForward,
-  Home,
-  Print,
-  Settings,
-} from "@mui/icons-material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import ArrowForward from "@mui/icons-material/ArrowForward";
+import Settings from "@mui/icons-material/Settings";
 import {
   Alert,
   Box,
@@ -17,6 +13,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { PDF_TEMPLATE_PATH, REPORT_DATA } from "../constants/config";
 import { useSettings } from "../../hooks/useSettings";
+import MobileReviewCard from "./MobileReviewCard";
 import "./MobileReportFlow.css";
 
 // Simple unique ID generator that works on all browsers/devices
@@ -31,7 +28,7 @@ const TOTAL_STEPS = 3;
 const MobileReportFlow = ({ onOpenSettings }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-  const { showCardFindings, easyNavigationButtons } = useSettings();
+  const { showCardFindings, easyNavigationButtons, editableReviewFindings } = useSettings();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [currentFindingIndex, setCurrentFindingIndex] = useState(0);
@@ -158,24 +155,6 @@ const MobileReportFlow = ({ onOpenSettings }) => {
       updated[currentFindingIndex] = { ...updated[currentFindingIndex], text: newText };
       return updated;
     });
-  };
-
-  const handleRemoveFindingFromCard = () => {
-    const idx = currentFindingIndex;
-    const newFindings = findings.filter((_, i) => i !== idx);
-    setFindings(newFindings);
-    if (idx >= newFindings.length && newFindings.length > 0) {
-      setCurrentFindingIndex(newFindings.length - 1);
-    } else if (newFindings.length === 0) {
-      setCurrentFindingIndex(0);
-    }
-  };
-
-  const handleAddFindingFromReview = () => {
-    const nextIndex = findings.length;
-    setFindings((prev) => [...prev, { text: "", id: generateId() }]);
-    setCurrentFindingIndex(nextIndex);
-    goToStep(1);
   };
 
   const stepLabels = ["Select Category", "Edit Findings", "Review & Print"];
@@ -355,62 +334,18 @@ const MobileReportFlow = ({ onOpenSettings }) => {
           </Box>
 
           {/* CARD 3: Review & Print */}
-          <Box className="mobile-card">
-            <div className="review-content">
-              <div className="review-actions-row">
-                <button
-                  className="print-button-large"
-                  disabled={findings.filter((f) => f.text.trim() !== "").length === 0 || printing}
-                  onClick={handlePrint}
-                  style={{
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                  }}
-                >
-                  <Print fontSize="small" /> {printing ? "Printing..." : "Print Report"}
-                </button>
-                <button
-                  className="home-button"
-                  onClick={handleGoHome}
-                  style={{
-                    backgroundColor: isDark
-                      ? "rgba(255,255,255,0.1)"
-                      : "rgba(0,0,0,0.06)",
-                    color: "inherit",
-                  }}
-                >
-                  <Home fontSize="small" /> Home
-                </button>
-              </div>
-
-              <p className="review-summary">
-                {categoryData?.name} report with {findings.filter((f) => f.text.trim() !== "").length} finding
-                {findings.length !== 1 ? "s" : ""}
-                {patientName ? ` for ${patientName}` : ""}
-              </p>
-
-              {findings.filter(f => f.text.trim() !== "").length > 0 && (
-                <div
-                  className="review-findings-preview"
-                  style={{
-                    backgroundColor: isDark
-                      ? "rgba(255,255,255,0.06)"
-                      : "#f8f9fa",
-                    border: `1px solid ${
-                      isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)"
-                    }`,
-                  }}
-                >
-                  <h4>FINDINGS:</h4>
-                  <ul>
-                    {findings.filter(f => f.text.trim() !== "").map((f, i) => (
-                      <li key={i}>{f.text}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </Box>
+          <MobileReviewCard
+            findings={findings}
+            categoryData={categoryData}
+            patientName={patientName}
+            editableReviewFindings={editableReviewFindings}
+            onFindingsChange={setFindings}
+            onPrint={handlePrint}
+            printing={printing}
+            isDark={isDark}
+            theme={theme}
+            onGoHome={handleGoHome}
+          />
         </Box>
       </Box>
 

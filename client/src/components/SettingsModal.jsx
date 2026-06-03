@@ -27,7 +27,9 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
     showCardFindings,
     setShowCardFindings,
     easyNavigationButtons,
-    setEasyNavigationButtons
+    setEasyNavigationButtons,
+    editableReviewFindings,
+    setEditableReviewFindings
   } = useSettings()
 
   const handleFontSizeChange = (event, value) => {
@@ -234,6 +236,24 @@ const SettingsModal = ({ open, onClose, setTheme, currentTheme }) => {
               setEasyNavigationButtons(e.target.checked)
               localStorage.setItem(
                 "easyNavigationButtons",
+                JSON.stringify(e.target.checked)
+              )
+            }}
+          />
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems="center"
+          mt={1}
+        >
+          <Typography color="text.primary">Editable Review Findings</Typography>
+          <Switch
+            checked={editableReviewFindings}
+            onChange={(e) => {
+              setEditableReviewFindings(e.target.checked)
+              localStorage.setItem(
+                "editableReviewFindings",
                 JSON.stringify(e.target.checked)
               )
             }}
