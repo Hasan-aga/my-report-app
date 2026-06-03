@@ -11,10 +11,12 @@ import {
   Button,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   IconButton,
   Menu,
   MenuItem,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
@@ -37,79 +39,92 @@ const MobileReviewCard = ({
   theme,
   onGoHome,
 }) => {
-  const [editingFindingIndex, setEditingFindingIndex] = useState(null);
+  const [editingFindingId, setEditingFindingId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const [menuFindingIndex, setMenuFindingIndex] = useState(null);
+  const [menuFindingId, setMenuFindingId] = useState(null);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
 
   const filteredFindings = findings.filter((f) => f.text.trim() !== "");
+  const editingFinding = editingFindingId
+    ? findings.find((f) => f.id === editingFindingId)
+    : null;
 
-  const handleOpenMenu = (index, event) => {
+  const handleOpenMenu = (id, event) => {
     setMenuAnchorEl(event.currentTarget);
-    setMenuFindingIndex(index);
+    setMenuFindingId(id);
   };
 
   const handleCloseMenu = () => {
     setMenuAnchorEl(null);
-    setMenuFindingIndex(null);
+    setMenuFindingId(null);
   };
 
   const handleEditFromMenu = () => {
-    setEditingFindingIndex(menuFindingIndex);
-    setEditingText(findings[menuFindingIndex].text);
+    const finding = findings.find((f) => f.id === menuFindingId);
+    if (finding) {
+      setEditingFindingId(finding.id);
+      setEditingText(finding.text);
+    }
     handleCloseMenu();
   };
 
-  const handleDeleteFromMenu = (index) => {
-    const updated = findings.filter((_, i) => i !== index);
+  const handleDeleteFromMenu = (id) => {
+    const updated = findings.filter((f) => f.id !== id);
     onFindingsChange(updated);
-    if (editingFindingIndex === index) {
-      setEditingFindingIndex(null);
+    if (editingFindingId === id) {
+      setEditingFindingId(null);
       setEditingText("");
     }
     handleCloseMenu();
   };
 
-  const handleUpdateFindingText = (index, text) => {
-    const updated = [...findings];
-    updated[index] = { ...updated[index], text };
-    const cleaned = updated.filter((f) => f.text.trim() !== "");
-    onFindingsChange(cleaned);
-
-    if (text.trim() === "") {
-      setEditingFindingIndex(null);
-      setEditingText("");
-    }
+  const handleModalTextChange = (e) => {
+    setEditingText(e.target.value);
   };
 
   const handleCommitEdit = () => {
-    if (editingFindingIndex !== null && findings[editingFindingIndex]?.text.trim() === "") {
-      const updated = findings.filter((_, i) => i !== editingFindingIndex);
-      onFindingsChange(updated);
+    if (editingFindingId) {
+      const finding = findings.find((f) => f.id === editingFindingId);
+      if (finding && editingText.trim() === "") {
+        onFindingsChange(findings.filter((f) => f.id !== editingFindingId));
+      } else if (finding) {
+        onFindingsChange(
+          findings.map((f) =>
+            f.id === editingFindingId ? { ...f, text: editingText } : f,
+          ),
+        );
+      }
     }
-    setEditingFindingIndex(null);
+    setEditingFindingId(null);
     setEditingText("");
   };
 
   const handleCancelEdit = () => {
-    if (editingFindingIndex === null) return;
-    const currentText = findings[editingFindingIndex]?.text || "";
-    if (currentText !== editingText) {
-      setDiscardDialogOpen(true);
-    } else {
-      setEditingFindingIndex(null);
-      setEditingText("");
+    if (editingFindingId) {
+      const finding = findings.find((f) => f.id === editingFindingId);
+      if (finding && editingText !== finding.text) {
+        setDiscardDialogOpen(true);
+      } else {
+        setEditingFindingId(null);
+        setEditingText("");
+      }
+    }
+  };
+
+  const handleRequestClose = () => {
+    if (editingFinding) {
+      if (editingText !== editingFinding.text) {
+        setDiscardDialogOpen(true);
+      } else {
+        setEditingFindingId(null);
+        setEditingText("");
+      }
     }
   };
 
   const handleDiscard = () => {
-    if (editingFindingIndex !== null) {
-      const updated = [...findings];
-      updated[editingFindingIndex] = { ...updated[editingFindingIndex], text: editingText };
-      onFindingsChange(updated);
-    }
-    setEditingFindingIndex(null);
+    setEditingFindingId(null);
     setEditingText("");
     setDiscardDialogOpen(false);
   };
@@ -120,10 +135,10 @@ const MobileReviewCard = ({
   };
 
   const handleAddFinding = () => {
-    const newFinding = { text: "", id: generateId() };
-    const updated = [...findings, newFinding];
-    onFindingsChange(updated);
-    setEditingFindingIndex(updated.length - 1);
+    const id = generateId();
+    const newFinding = { text: "", id };
+    onFindingsChange([...findings, newFinding]);
+    setEditingFindingId(id);
     setEditingText("");
   };
 
@@ -164,10 +179,10 @@ const MobileReviewCard = ({
 
         {editableReviewFindings ? (
           <div className="review-editable-findings">
-            {filteredFindings.map((finding, i) => (
+            {filteredFindings.map((finding) => (
               <div
                 key={finding.id}
-                className={`review-finding-card ${editingFindingIndex === i ? "editing" : ""}`}
+                className="review-finding-card"
                 style={{
                   backgroundColor: isDark
                     ? "rgba(255,255,255,0.06)"
@@ -177,65 +192,35 @@ const MobileReviewCard = ({
                   }`,
                 }}
               >
-                {editingFindingIndex === i ? (
-                  <div className="review-finding-edit-area">
-                    <textarea
-                      value={finding.text}
-                      onChange={(e) => handleUpdateFindingText(i, e.target.value)}
-                      placeholder="Enter finding..."
-                      autoFocus
-                      style={{ color: "inherit" }}
-                    />
-                    <div className="review-finding-edit-actions">
-                      <IconButton
-                        size="small"
-                        onClick={handleCancelEdit}
-                        aria-label="Cancel edit"
-                      >
-                        <Close fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={handleCommitEdit}
-                        aria-label="Confirm edit"
-                        sx={{ color: theme.palette.primary.main }}
-                      >
-                        <Check fontSize="small" />
-                      </IconButton>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="review-finding-text">
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                        }}
-                      >
-                        {finding.text}
-                      </Typography>
-                    </div>
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleOpenMenu(i, e)}
-                      aria-label="Finding options"
-                      sx={{ flexShrink: 0 }}
-                    >
-                      <MoreVert fontSize="small" />
-                    </IconButton>
-                  </>
-                )}
+                <div className="review-finding-text">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {finding.text}
+                  </Typography>
+                </div>
+                <IconButton
+                  size="small"
+                  onClick={(e) => handleOpenMenu(finding.id, e)}
+                  aria-label="Finding options"
+                  sx={{ flexShrink: 0 }}
+                >
+                  <MoreVert fontSize="small" />
+                </IconButton>
               </div>
             ))}
 
             <button
               className="review-add-btn"
               onClick={handleAddFinding}
+              aria-label="Add finding"
               style={{
                 color: theme.palette.primary.main,
                 borderColor: theme.palette.primary.main,
@@ -259,8 +244,8 @@ const MobileReviewCard = ({
             >
               <h4>FINDINGS:</h4>
               <ul>
-                {filteredFindings.map((f, i) => (
-                  <li key={i}>{f.text}</li>
+                {filteredFindings.map((f) => (
+                  <li key={f.id}>{f.text}</li>
                 ))}
               </ul>
             </div>
@@ -275,10 +260,42 @@ const MobileReviewCard = ({
           <MenuItem onClick={handleEditFromMenu}>
             <Edit fontSize="small" sx={{ mr: 1 }} /> Edit
           </MenuItem>
-          <MenuItem onClick={() => handleDeleteFromMenu(menuFindingIndex)}>
+          <MenuItem onClick={() => handleDeleteFromMenu(menuFindingId)}>
             <Delete fontSize="small" sx={{ mr: 1 }} /> Delete
           </MenuItem>
         </Menu>
+
+        <Dialog
+          open={editingFindingId !== null}
+          onClose={handleRequestClose}
+          fullWidth
+          maxWidth="sm"
+          PaperProps={{
+            sx: { borderRadius: 2 },
+          }}
+        >
+          <DialogTitle>Edit Finding</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              multiline
+              minRows={4}
+              maxRows={12}
+              fullWidth
+              variant="outlined"
+              placeholder="Enter finding..."
+              value={editingText}
+              onChange={handleModalTextChange}
+              sx={{ mt: 1 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleRequestClose}>Cancel</Button>
+            <Button onClick={handleCommitEdit} variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <Dialog open={discardDialogOpen} onClose={() => setDiscardDialogOpen(false)}>
           <DialogTitle>Discard changes?</DialogTitle>
