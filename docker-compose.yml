@@ -1,6 +1,8 @@
 services:
   client:
     image: ghcr.io/hasan-aga/my-report-app-client:latest
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
     depends_on:
       server:
         condition: service_healthy
@@ -17,6 +19,8 @@ services:
 
   server:
     image: ghcr.io/hasan-aga/my-report-app-server:latest
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
     environment:
       - PORT=5002
       - NODE_ENV=production
@@ -37,6 +41,8 @@ services:
     environment:
       - WATCHTOWER_POLL_INTERVAL=300
       - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - DOCKER_API_VERSION=1.40
     restart: always
 
 networks:
